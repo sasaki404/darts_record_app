@@ -1,19 +1,27 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:darts_record_app/page/game/count_up.dart';
 import 'package:darts_record_app/util/app_color.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'dart:math' as math;
 
 class ListPage extends StatelessWidget {
   const ListPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final player = AudioPlayer();
     return Scaffold(
       backgroundColor: AppColor.darkGrey,
       body: ListView(
         children: <Widget>[
           GestureDetector(
             onTap: () {
+              if (math.Random().nextBool()) {
+                player.play(AssetSource("yoro.mp3"));
+              } else {
+                player.play(AssetSource("saaiku.mp3"));
+              }
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => CountUp()),

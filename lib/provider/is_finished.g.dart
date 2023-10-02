@@ -1,27 +1,27 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'round_number.dart';
+part of 'is_finished.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$roundNumberNotifierHash() =>
-    r'a53995c2d39ff89a4b5bfc12d058fa1f95d7608b';
+String _$isFinishedNotifierHash() =>
+    r'681623a02202e08df71e72f4b164526961f82616';
 
-/// See also [RoundNumberNotifier].
-@ProviderFor(RoundNumberNotifier)
-final roundNumberNotifierProvider =
-    AutoDisposeNotifierProvider<RoundNumberNotifier, int>.internal(
-  RoundNumberNotifier.new,
-  name: r'roundNumberNotifierProvider',
+/// See also [IsFinishedNotifier].
+@ProviderFor(IsFinishedNotifier)
+final isFinishedNotifierProvider =
+    AutoDisposeNotifierProvider<IsFinishedNotifier, bool>.internal(
+  IsFinishedNotifier.new,
+  name: r'isFinishedNotifierProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$roundNumberNotifierHash,
+      : _$isFinishedNotifierHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$RoundNumberNotifier = AutoDisposeNotifier<int>;
+typedef _$IsFinishedNotifier = AutoDisposeNotifier<bool>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

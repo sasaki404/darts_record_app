@@ -1,7 +1,12 @@
+import 'package:audioplayers/audioplayers.dart';
+import 'package:darts_record_app/page/game/count_up_result.dart';
 import 'package:darts_record_app/page/game/logic/calculator.dart';
 import 'package:darts_record_app/page/game/ui/counter_keyboard.dart';
 import 'package:darts_record_app/provider/counter_str.dart';
+import 'package:darts_record_app/provider/is_finished.dart';
 import 'package:darts_record_app/provider/round_number.dart';
+import 'package:darts_record_app/provider/round_score.dart';
+import 'package:darts_record_app/provider/score_list.dart';
 import 'package:darts_record_app/provider/total_score.dart';
 import 'package:darts_record_app/util/app_color.dart';
 import 'package:flutter/material.dart';
@@ -9,54 +14,100 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 // ignore: must_be_immutable
-class CountUp extends ConsumerWidget {
-  int tempScore = 0; // ダブル、トリプルを考慮するための一時変数
-  int whatNum = 0; // ラウンドごとで今何投目か
+class CountUp extends ConsumerStatefulWidget {
   CountUp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  CountUpState createState() => CountUpState();
+}
+
+class CountUpState extends ConsumerState<CountUp> {
+  int tempScore = 0; // ダブル、トリプルを考慮するための一時変数
+  int whatNum = 0; // ラウンドごとで今何投目か
+  final player = AudioPlayer();
+  @override
+  void initState() {
+    super.initState();
+    ref.read(totalScoreNotifierProvider.notifier).build(); // foo
+    ref.read(scoreListNotifierProvider.notifier).build();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final totalScore = ref.watch(totalScoreNotifierProvider);
     final roundNumber = ref.watch(roundNumberNotifierProvider);
+    // final roundScore = ref.watch(roundScoreNotifierProvider);
+    // final scoreList = ref.watch(scoreListNotifierProvider);
+    final isFinished = ref.watch(isFinishedNotifierProvider);
     final totalScoreNotifier = ref.read(totalScoreNotifierProvider.notifier);
     final counterStrNotifier = ref.read(counterStrNotifierProvider.notifier);
     final roundNumberNotifier = ref.read(roundNumberNotifierProvider.notifier);
+    final scoreListNotifier = ref.read(scoreListNotifierProvider.notifier);
+    final roundScoreNotifier = ref.read(roundScoreNotifierProvider.notifier);
+    final isFinishedNotifier = ref.read(isFinishedNotifierProvider.notifier);
     ref.listen(counterStrNotifierProvider, (prevState, nextState) {
-      if (nextState.startsWith('wait')) {
+      if (nextState.startsWith('wait') || roundNumber > 8) {
         return;
       }
       int prevScore = totalScore;
       int score = Calculator.toScore(nextState);
       if (score < 0) {
+        // ダブルかトリプルのコマンド
         tempScore = score;
       } else if (nextState.toUpperCase() == 'CANCEL' &&
           prevState != null &&
           prevState.startsWith('wait')) {
-        totalScoreNotifier.updateState(int.parse(prevState.substring(5)));
+        // キャンセルボタンが押されて、Redoスタックがあるとき
+        if (tempScore >= 0) {
+          scoreListNotifier.pop();
+          totalScoreNotifier.updateState(scoreListNotifier.sum());
+        }
         if (tempScore == 0 && whatNum == 0) {
           // ダブル、トリプル以外でラウンドの始まり
           whatNum = 2;
           roundNumberNotifier.toPrevRound();
         }
         if (tempScore == 0) {
+          // ダブルトリプル以外
           whatNum -= 1;
         }
         tempScore = 0;
       } else if (tempScore < 0 && !nextState.startsWith('wait')) {
-        totalScoreNotifier.addScore(-tempScore * score);
+        // 1個前にダブルかトリプルが選択されてスコアを選択したとき
+        final cnt = -tempScore * score;
+        totalScoreNotifier.addScore(cnt);
+        scoreListNotifier.push(cnt);
         tempScore = 0;
         whatNum += 1;
+      } else if (nextState == "Next") {
+        whatNum = 3;
       } else {
+        // 普通にシングルのスコア
         totalScoreNotifier.addScore(score);
+        scoreListNotifier.push(score);
         whatNum += 1;
       }
+      // 二連ちゃんで同じスコアだったらリスナーがスコアの選択を検知できんからステートを更新しとる
       counterStrNotifier.updateState('wait:$prevScore');
       if (whatNum >= 3) {
         // ラウンド終了のとき
-        roundNumberNotifier.toNextRound();
+        roundNumberNotifier.updateState(roundNumber + 1);
         whatNum = 0;
+        roundScoreNotifier.clean();
+        if (roundNumber >= 8) {
+          // ゲーム終了できるとき
+          isFinishedNotifier.updateState(true);
+        }
       }
     });
+    // ref.listen(scoreListNotifierProvider, (prevState, nextState) {
+    //   if (nextState.length <= 3 * (roundNumber - 1)) {
+    //     return;
+    //   }
+    //   for (int i = 3 * (roundNumber - 1); i < nextState.length; i++) {
+    //     roundScoreNotifier.push(nextState[i]);
+    //   }
+    // });
     return Scaffold(
       backgroundColor: AppColor.black,
       appBar: AppBar(
@@ -70,7 +121,7 @@ class CountUp extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Text(
-            'ROUND $roundNumber/8',
+            (roundNumber <= 8) ? 'ROUND $roundNumber/8' : 'ROUND 8/8',
             style: GoogleFonts.bebasNeue(color: AppColor.white, fontSize: 35),
           ),
           // 得点を表示
@@ -79,6 +130,28 @@ class CountUp extends ConsumerWidget {
             style: GoogleFonts.bebasNeue(color: AppColor.white, fontSize: 120),
             textAlign: TextAlign.center,
           ),
+          isFinished
+              ? ElevatedButton(
+                  onPressed: () {
+                    player.play(AssetSource("result.mp3"));
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => CountUpResult()),
+                    );
+                  },
+                  child: Text("Finish",
+                      style: GoogleFonts.bebasNeue(
+                          color: AppColor.black, fontSize: 30)))
+              : const SizedBox(),
+          // Row(
+          //   children: roundScore
+          //       .map((e) => Text(
+          //             e.toString(),
+          //             style: GoogleFonts.bebasNeue(
+          //                 color: AppColor.white, fontSize: 20),
+          //           ))
+          //       .toList(),
+          // ),
           CounterKeyboard(),
         ],
       ),

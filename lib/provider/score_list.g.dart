@@ -1,27 +1,26 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'round_number.dart';
+part of 'score_list.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$roundNumberNotifierHash() =>
-    r'a53995c2d39ff89a4b5bfc12d058fa1f95d7608b';
+String _$scoreListNotifierHash() => r'f773f56aa1fb9274c24f8df138845d8c0195e97a';
 
-/// See also [RoundNumberNotifier].
-@ProviderFor(RoundNumberNotifier)
-final roundNumberNotifierProvider =
-    AutoDisposeNotifierProvider<RoundNumberNotifier, int>.internal(
-  RoundNumberNotifier.new,
-  name: r'roundNumberNotifierProvider',
+/// See also [ScoreListNotifier].
+@ProviderFor(ScoreListNotifier)
+final scoreListNotifierProvider =
+    AutoDisposeNotifierProvider<ScoreListNotifier, List<int>>.internal(
+  ScoreListNotifier.new,
+  name: r'scoreListNotifierProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$roundNumberNotifierHash,
+      : _$scoreListNotifierHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$RoundNumberNotifier = AutoDisposeNotifier<int>;
+typedef _$ScoreListNotifier = AutoDisposeNotifier<List<int>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

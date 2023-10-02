@@ -37,9 +37,11 @@ class CounterKeyboard extends StatelessWidget {
                 '3',
                 '2',
                 '1',
+                '0',
                 'Double',
                 'Triple',
-                'Cancel'
+                'Cancel',
+                'Next',
               ].map((key) {
                 return GridTile(
                   child: KeyboardButton(key),
