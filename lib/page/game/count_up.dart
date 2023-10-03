@@ -14,39 +14,32 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 // ignore: must_be_immutable
-class CountUp extends ConsumerStatefulWidget {
+class CountUp extends ConsumerWidget {
   CountUp({super.key});
-
-  @override
-  CountUpState createState() => CountUpState();
-}
-
-class CountUpState extends ConsumerState<CountUp> {
   int tempScore = 0; // ダブル、トリプルを考慮するための一時変数
   int whatNum = 0; // ラウンドごとで今何投目か
   final player = AudioPlayer();
-  @override
-  void initState() {
-    super.initState();
-    ref.read(totalScoreNotifierProvider.notifier).build(); // foo
-    ref.read(scoreListNotifierProvider.notifier).build();
-  }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final totalScore = ref.watch(totalScoreNotifierProvider);
     final roundNumber = ref.watch(roundNumberNotifierProvider);
     // final roundScore = ref.watch(roundScoreNotifierProvider);
     // final scoreList = ref.watch(scoreListNotifierProvider);
     final isFinished = ref.watch(isFinishedNotifierProvider);
-    final totalScoreNotifier = ref.read(totalScoreNotifierProvider.notifier);
-    final counterStrNotifier = ref.read(counterStrNotifierProvider.notifier);
-    final roundNumberNotifier = ref.read(roundNumberNotifierProvider.notifier);
-    final scoreListNotifier = ref.read(scoreListNotifierProvider.notifier);
-    final roundScoreNotifier = ref.read(roundScoreNotifierProvider.notifier);
-    final isFinishedNotifier = ref.read(isFinishedNotifierProvider.notifier);
+    final totalScoreNotifier = ref.watch(totalScoreNotifierProvider.notifier);
+    final counterStrNotifier = ref.watch(counterStrNotifierProvider.notifier);
+    final roundNumberNotifier = ref.watch(roundNumberNotifierProvider.notifier);
+    final scoreListNotifier = ref.watch(scoreListNotifierProvider.notifier);
+    print('scoreListNotifierProvider: ${ref.watch(scoreListNotifierProvider)}');
+    final roundScoreNotifier = ref.watch(roundScoreNotifierProvider.notifier);
+    final isFinishedNotifier = ref.watch(isFinishedNotifierProvider.notifier);
     ref.listen(counterStrNotifierProvider, (prevState, nextState) {
       if (nextState.startsWith('wait') || roundNumber > 8) {
+        if (nextState == 'wait-result') {
+           tempScore = 0;
+           whatNum = 0;
+        }
         return;
       }
       int prevScore = totalScore;
@@ -87,6 +80,11 @@ class CountUpState extends ConsumerState<CountUp> {
         scoreListNotifier.push(score);
         whatNum += 1;
       }
+      if (roundNumber >= 8 && whatNum >= 3) {
+        // ゲーム終了できるとき
+        isFinishedNotifier.updateState(true);
+        return;
+      }
       // 二連ちゃんで同じスコアだったらリスナーがスコアの選択を検知できんからステートを更新しとる
       counterStrNotifier.updateState('wait:$prevScore');
       if (whatNum >= 3) {
@@ -94,10 +92,6 @@ class CountUpState extends ConsumerState<CountUp> {
         roundNumberNotifier.updateState(roundNumber + 1);
         whatNum = 0;
         roundScoreNotifier.clean();
-        if (roundNumber >= 8) {
-          // ゲーム終了できるとき
-          isFinishedNotifier.updateState(true);
-        }
       }
     });
     // ref.listen(scoreListNotifierProvider, (prevState, nextState) {

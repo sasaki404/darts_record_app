@@ -17,9 +17,7 @@ class ScoreListNotifier extends _$ScoreListNotifier {
   }
 
   void push(int score) {
-    final oldState = state;
-    final newState = [...oldState, score];
-    state = newState;
+    state.add(score);
     print(state);
   }
 

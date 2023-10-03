@@ -47,7 +47,7 @@ class KeyboardButton extends ConsumerWidget {
             player.play(AssetSource("ei.mp3"));
           }
         }
-        final notifier = ref.read(counterStrNotifierProvider.notifier);
+        final notifier = ref.watch(counterStrNotifierProvider.notifier);
         notifier.updateState(_value);
       },
     ));

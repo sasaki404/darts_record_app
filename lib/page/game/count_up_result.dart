@@ -18,11 +18,6 @@ class CountUpResult extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final totalScore = ref.read(totalScoreNotifierProvider);
-    final totalScoreNotifier = ref.read(totalScoreNotifierProvider.notifier);
-    final scoreListNotifier = ref.read(scoreListNotifierProvider.notifier);
-    final roundNumberNotifier = ref.read(roundNumberNotifierProvider.notifier);
-    final isFinishedNotifer = ref.read(isFinishedNotifierProvider.notifier);
-    final countStrNotifier = ref.read(counterStrNotifierProvider.notifier);
     double score = totalScore / 8;
     return Scaffold(
       body: Column(
@@ -43,14 +38,25 @@ class CountUpResult extends ConsumerWidget {
               ElevatedButton(
                   onPressed: () {
                     player.play(AssetSource("home.mp3"));
+                    final totalScoreNotifier =
+                        ref.read(totalScoreNotifierProvider.notifier);
+                    final scoreListNotifier =
+                        ref.read(scoreListNotifierProvider.notifier);
+                    final roundNumberNotifier =
+                        ref.read(roundNumberNotifierProvider.notifier);
+                    final isFinishedNotifer =
+                        ref.read(isFinishedNotifierProvider.notifier);
+                    final countStrNotifier =
+                        ref.read(counterStrNotifierProvider.notifier);
                     totalScoreNotifier.updateState(0);
                     roundNumberNotifier.updateState(1);
                     isFinishedNotifer.updateState(false);
-                    countStrNotifier.updateState('');
+                    countStrNotifier.updateState('wait-result');
                     scoreListNotifier.clean();
-                    Navigator.push(
+                    Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(builder: (context) => ListPage()),
+                      (route) => false, // すべての履歴をクリア
                     );
                   },
                   child: Text("HOME",
@@ -62,14 +68,25 @@ class CountUpResult extends ConsumerWidget {
               ElevatedButton(
                   onPressed: () {
                     player.play(AssetSource("yoro.mp3"));
+                    final totalScoreNotifier =
+                        ref.read(totalScoreNotifierProvider.notifier);
+                    final scoreListNotifier =
+                        ref.read(scoreListNotifierProvider.notifier);
+                    final roundNumberNotifier =
+                        ref.read(roundNumberNotifierProvider.notifier);
+                    final isFinishedNotifer =
+                        ref.read(isFinishedNotifierProvider.notifier);
+                    final countStrNotifier =
+                        ref.read(counterStrNotifierProvider.notifier);
                     totalScoreNotifier.updateState(0);
                     roundNumberNotifier.updateState(1);
                     isFinishedNotifer.updateState(false);
-                    countStrNotifier.updateState('');
+                    countStrNotifier.updateState('wait-result');
                     scoreListNotifier.clean();
-                    Navigator.push(
+                    Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(builder: (context) => CountUp()),
+                      (route) => false, // すべての履歴をクリア
                     );
                   },
                   child: Text("CONTINUE",
