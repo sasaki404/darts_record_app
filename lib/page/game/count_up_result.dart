@@ -1,6 +1,6 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:darts_record_app/page/game/count_up.dart';
-import 'package:darts_record_app/page/game/list_page.dart';
+import 'package:darts_record_app/page/home_page.dart';
 import 'package:darts_record_app/provider/counter_str.dart';
 import 'package:darts_record_app/provider/is_finished.dart';
 import 'package:darts_record_app/provider/round_number.dart';
@@ -22,7 +22,7 @@ class CountUpResult extends ConsumerWidget {
     return Scaffold(
       body: Column(
         children: [
-          SizedBox(height: 60),
+          const SizedBox(height: 60),
           Text("RESULT",
               style:
                   GoogleFonts.bebasNeue(color: AppColor.black, fontSize: 50)),
@@ -55,7 +55,7 @@ class CountUpResult extends ConsumerWidget {
                     scoreListNotifier.clean();
                     Navigator.pushAndRemoveUntil(
                       context,
-                      MaterialPageRoute(builder: (context) => ListPage()),
+                      MaterialPageRoute(builder: (context) => const HomePage()),
                       (route) => false, // すべての履歴をクリア
                     );
                   },

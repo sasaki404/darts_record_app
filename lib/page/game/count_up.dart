@@ -1,4 +1,5 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:darts_record_app/database/count_up_record_db.dart';
 import 'package:darts_record_app/page/game/count_up_result.dart';
 import 'package:darts_record_app/page/game/logic/calculator.dart';
 import 'package:darts_record_app/page/game/ui/counter_keyboard.dart';
@@ -19,6 +20,7 @@ class CountUp extends ConsumerWidget {
   int tempScore = 0; // ダブル、トリプルを考慮するための一時変数
   int whatNum = 0; // ラウンドごとで今何投目か
   final player = AudioPlayer();
+  final countUpRecordDB = CountUpRecordDB();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -37,8 +39,8 @@ class CountUp extends ConsumerWidget {
     ref.listen(counterStrNotifierProvider, (prevState, nextState) {
       if (nextState.startsWith('wait') || roundNumber > 8) {
         if (nextState == 'wait-result') {
-           tempScore = 0;
-           whatNum = 0;
+          tempScore = 0;
+          whatNum = 0;
         }
         return;
       }
@@ -92,6 +94,7 @@ class CountUp extends ConsumerWidget {
         roundNumberNotifier.updateState(roundNumber + 1);
         whatNum = 0;
         roundScoreNotifier.clean();
+        player.play(AssetSource("next.mp3"));
       }
     });
     // ref.listen(scoreListNotifierProvider, (prevState, nextState) {
@@ -126,12 +129,18 @@ class CountUp extends ConsumerWidget {
           ),
           isFinished
               ? ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     player.play(AssetSource("result.mp3"));
+                    final score = ref.read(totalScoreNotifierProvider);
+                    final scoreList = ref.read(scoreListNotifierProvider);
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => CountUpResult()),
                     );
+                    // TODO:  マルチプレイ対応でuserIdをちゃんと指定する。スコアとかのstateも辞書型に変更してid:stateみたいな感じに
+                    // レコード保存
+                    await countUpRecordDB.insert(
+                        userId: 1, score: score, scoreList: scoreList);
                   },
                   child: Text("Finish",
                       style: GoogleFonts.bebasNeue(

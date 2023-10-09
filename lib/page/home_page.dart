@@ -9,11 +9,11 @@ class HomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return const DefaultTabController(
+    return DefaultTabController(
       length: 2,
       child: Scaffold(
         backgroundColor: AppColor.black,
-        appBar: TabBar(
+        appBar: const TabBar(
           labelColor: AppColor.lightGrey,
           indicatorColor: AppColor.blue,
           tabs: [
@@ -23,7 +23,7 @@ class HomePage extends ConsumerWidget {
         ),
         body: TabBarView(
           children: [
-            ListPage(),
+            const ListPage(),
             RecordPage(),
           ],
         ),
