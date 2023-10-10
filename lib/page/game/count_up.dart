@@ -108,9 +108,11 @@ class CountUp extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColor.black,
       appBar: AppBar(
+        centerTitle: true,
         title: Text(
           'COUNT-UP',
           style: GoogleFonts.bebasNeue(fontSize: 50, color: AppColor.black),
+          textAlign: TextAlign.center,
         ),
       ),
       body: Column(
