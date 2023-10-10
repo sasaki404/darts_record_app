@@ -12,8 +12,7 @@ class KeyboardButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Container(
-        child: TextButton(
+    return TextButton(
       style: TextButton.styleFrom(
         fixedSize: const Size(30, 30), // 幅,高さ
       ),
@@ -21,9 +20,10 @@ class KeyboardButton extends ConsumerWidget {
         child: Text(
           _value,
           style: GoogleFonts.bebasNeue(
-            fontSize: 25,
+            fontSize: 15,
             color: Colors.white,
           ),
+          textAlign: TextAlign.center,
         ),
       ),
       onPressed: () {
@@ -50,6 +50,6 @@ class KeyboardButton extends ConsumerWidget {
         final notifier = ref.watch(counterStrNotifierProvider.notifier);
         notifier.updateState(_value);
       },
-    ));
+    );
   }
 }
