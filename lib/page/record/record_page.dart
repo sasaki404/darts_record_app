@@ -28,11 +28,13 @@ class RecordPageState extends ConsumerState<RecordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        // TODO: actionsプロパティとかで、カウントアップ以外のゲームの記録に切り替える
-        title: Text(
-          'RECORD',
-          style: GoogleFonts.bebasNeue(fontSize: 50, color: AppColor.black),
+      backgroundColor: AppColor.lightGrey,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        backgroundColor: AppColor.black,
+        child: const Icon(
+          Icons.change_circle,
+          color: AppColor.white,
         ),
       ),
       body: FutureBuilder(
@@ -47,7 +49,7 @@ class RecordPageState extends ConsumerState<RecordPage> {
                       child: Text(
                         'NO RECORD',
                         style: GoogleFonts.bebasNeue(
-                            fontSize: 50, color: AppColor.black),
+                            fontSize: 50, color: AppColor.white),
                       ),
                     )
                   : ListView.separated(
@@ -59,13 +61,40 @@ class RecordPageState extends ConsumerState<RecordPage> {
                         final date = DateFormat('yyyy/MM/dd')
                             .add_Hm()
                             .format(DateTime.parse(record.createdAt));
-                        return ListTile(
-                          title: Text(
-                            "${record.score} STATS: ${record.score / 8}",
-                            style: GoogleFonts.bebasNeue(
-                                fontSize: 50, color: AppColor.black),
+                        return Card(
+                          color: AppColor.darkGrey,
+                          shape: const RoundedRectangleBorder(
+                            // 枠線を変更できる
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(60), // Card左上の角に丸み
+                              bottomRight:
+                                  Radius.elliptical(40, 20), //Card左上の角の微調整
+                              // (x, y) -> (元の角から左にどれだけ離れているか, 元の角から上にどれだけ離れているか)
+                            ),
                           ),
-                          subtitle: Text(date),
+                          child: Column(children: [
+                            Text(
+                              "${record.score}",
+                              style: GoogleFonts.bebasNeue(
+                                  fontSize: 40, color: AppColor.white),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "STATS: ${record.score / 8}",
+                                  style: GoogleFonts.bebasNeue(
+                                      fontSize: 20, color: AppColor.white),
+                                ),
+                                SizedBox(width: 30),
+                                Text(
+                                  date,
+                                  style: GoogleFonts.bebasNeue(
+                                      fontSize: 20, color: AppColor.white),
+                                ),
+                              ],
+                            ),
+                          ]),
                         );
                       },
                     );
