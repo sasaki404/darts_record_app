@@ -14,7 +14,7 @@ class HomePage extends ConsumerWidget {
       child: Scaffold(
         backgroundColor: AppColor.black,
         appBar: const TabBar(
-          labelColor: AppColor.lightGrey,
+          labelColor: AppColor.white,
           indicatorColor: AppColor.blue,
           tabs: [
             Tab(text: 'GAME'),
