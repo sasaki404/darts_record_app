@@ -1,5 +1,6 @@
 import 'package:darts_record_app/database/count_up_record_db.dart';
 import 'package:darts_record_app/model/count_up_record.dart';
+import 'package:darts_record_app/page/record/graph_page.dart';
 import 'package:darts_record_app/util/app_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,7 +31,13 @@ class RecordPageState extends ConsumerState<RecordPage> {
     return Scaffold(
       backgroundColor: AppColor.lightGrey,
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => GraphPage(),
+            ),
+          );
+        },
         backgroundColor: AppColor.black,
         child: const Icon(
           Icons.change_circle,
