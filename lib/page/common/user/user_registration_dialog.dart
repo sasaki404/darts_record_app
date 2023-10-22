@@ -1,18 +1,35 @@
-import 'package:darts_record_app/database/user_info_table.dart';
+import 'package:darts_record_app/model/user_info.dart';
 import 'package:darts_record_app/provider/login_user_id.dart';
+import 'package:darts_record_app/provider/user_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class UserRegistrationDialog extends ConsumerWidget {
-  UserRegistrationDialog({super.key});
+  final bool isEditMode;
+  final int userId;
+  UserRegistrationDialog(
+      {super.key, required this.isEditMode, this.userId = -1});
   final controller = TextEditingController();
   final focusNode = FocusNode();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final userInfo = ref.watch(userInfoNotifierProvider);
+    late UserInfo ui;
+    switch (userInfo) {
+      case AsyncData(:final value):
+        {
+          if (isEditMode) {
+            ui = UserInfo.createMapfromList(value)[userId]!;
+            controller.text = ui.name;
+          }
+        }
+      case AsyncValue():
+        const CircularProgressIndicator();
+    }
     return AlertDialog(
-      title: const Text("User Registration",
-          style: TextStyle(
+      title: Text((isEditMode) ? "Edit Your Profile" : "User Registration",
+          style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
           )),
@@ -51,8 +68,19 @@ class UserRegistrationDialog extends ConsumerWidget {
                       );
                     });
               } else {
-                int id = await UserInfoTable().insert(controller.text);
-                ref.read(loginUserIdNotifierProvider.notifier).updateState(id);
+                if (!isEditMode) {
+                  // 登録モードのとき
+                  int id = await ref
+                      .read(userInfoNotifierProvider.notifier)
+                      .insert(controller.text);
+                  ref
+                      .read(loginUserIdNotifierProvider.notifier)
+                      .updateState(id);
+                } else {
+                  ui.name = controller.text;
+                  ref.read(userInfoNotifierProvider.notifier).updateState(ui);
+                }
+                if (context.mounted) Navigator.pop(context);
               }
             },
             child: const Text("Save")),

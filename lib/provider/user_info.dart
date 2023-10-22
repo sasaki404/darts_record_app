@@ -10,6 +10,12 @@ class UserInfoNotifier extends _$UserInfoNotifier {
     return UserInfoTable().selectAll();
   }
 
+  Future<int> insert(String name) async {
+    int id = await UserInfoTable().insert(name);
+    state = AsyncData(await UserInfoTable().selectAll());
+    return id;
+  }
+
   Future<void> updateState(UserInfo info) async {
     UserInfoTable().update(info);
     state = AsyncData(await UserInfoTable().selectAll());

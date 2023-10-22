@@ -47,13 +47,17 @@ class UserInfoTable {
     return UserInfo.fromSqfliteDatabase(res.first);
   }
 
-  Future<UserInfo> update(UserInfo info) async {
+  Future<void> update(UserInfo info) async {
     final db = await DatabaseManager().database;
     final sql = '''
-        UPDATE $tableName set name = ?, rating = ? WHERE id = ?
+        UPDATE $tableName set name = ?, rating = ?, updated_at = ? WHERE id = ?
     ''';
-    final res = await db.rawQuery(sql, [info.name, info.rating, info.id]);
-    return UserInfo.fromSqfliteDatabase(res.first);
+    await db.rawQuery(sql, [
+      info.name,
+      info.rating,
+      DateTime.now().millisecondsSinceEpoch,
+      info.id
+    ]);
   }
 
   //Future<int> update({required int id}) async {}

@@ -17,7 +17,16 @@ class UserProfileCard extends ConsumerWidget {
         showDialog(
             context: context,
             builder: (_) {
-              return UserRegistrationDialog();
+              switch (loginUserId) {
+                case AsyncData(:final value):
+                  return UserRegistrationDialog(
+                    // すでにログインしているユーザがいるときは編集モード
+                    isEditMode: (value != -1),
+                    userId: value,
+                  );
+                case _:
+                  return const CircularProgressIndicator();
+              }
             });
       },
       child: Card(

@@ -1,7 +1,7 @@
 class UserInfo {
   final int id;
-  final String name;
-  final double rating;
+  String name;
+  double rating;
 
   final String createdAt;
   final String? updatedAt;
