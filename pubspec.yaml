@@ -36,7 +36,7 @@ dependencies:
   flutter_speed_dial:
   google_fonts:
   audioplayers: ^5.1.0
-
+  fl_chart: ^0.64.0
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -45,6 +45,8 @@ dependencies:
   nil: ^1.1.1
   intl: ^0.18.1
   sqflite: ^2.3.0
+  shared_preferences: ^2.2.2
+  image_picker: ^1.0.4
 
 dev_dependencies:
   flutter_test:
