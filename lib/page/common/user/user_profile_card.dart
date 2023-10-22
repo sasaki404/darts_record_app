@@ -47,10 +47,9 @@ class UserProfileCard extends ConsumerWidget {
                 ),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(64),
-                  child: Image.asset(
-                    "assets/default_user.png",
-                    width: 64,
-                    height: 64,
+                  child: const Icon(
+                    Icons.account_circle,
+                    size: 80,
                   ),
                 ),
                 const SizedBox(
