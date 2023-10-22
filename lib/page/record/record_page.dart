@@ -1,4 +1,4 @@
-import 'package:darts_record_app/database/count_up_record_db.dart';
+import 'package:darts_record_app/database/count_up_record_table.dart';
 import 'package:darts_record_app/model/count_up_record.dart';
 import 'package:darts_record_app/page/record/graph_page.dart';
 import 'package:darts_record_app/util/app_color.dart';
@@ -16,7 +16,7 @@ class RecordPage extends ConsumerStatefulWidget {
 
 class RecordPageState extends ConsumerState<RecordPage> {
   Future<List<CountUpRecord>>? countUpRecords;
-  final countUpRecordDB = CountUpRecordDB();
+  final countUpRecordDB = CountUpRecordTable();
 
   @override
   void initState() {

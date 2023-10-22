@@ -2,7 +2,7 @@ import 'package:darts_record_app/database/database_manager.dart';
 import 'package:darts_record_app/model/count_up_record.dart';
 import 'package:sqflite/sqflite.dart';
 
-class CountUpRecordDB {
+class CountUpRecordTable {
   final tableName = 'COUNT_UP_RECORD';
 
   // COUNT_UP_RECORDテーブルを作成する

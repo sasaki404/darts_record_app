@@ -1,5 +1,7 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:darts_record_app/page/common/user/user_profile_card.dart';
 import 'package:darts_record_app/page/game/count_up.dart';
+import 'package:darts_record_app/page/game/ui/darts_board.dart';
 import 'package:darts_record_app/util/app_color.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -13,62 +15,69 @@ class ListPage extends StatelessWidget {
     final player = AudioPlayer();
     return Scaffold(
       backgroundColor: AppColor.darkGrey,
-      body: ListView(
-        children: <Widget>[
-          GestureDetector(
-            onTap: () {
-              if (math.Random().nextBool()) {
-                player.play(AssetSource("yoro.mp3"));
-              } else {
-                player.play(AssetSource("saaiku.mp3"));
-              }
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => CountUp()),
-              );
-            },
-            child: Card(
-              color: AppColor.black,
-              child: Text(
-                'COUNT-UP',
-                style:
-                    GoogleFonts.bebasNeue(fontSize: 80, color: AppColor.white),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => CountUp()),
-              );
-            },
-            child: Card(
-              color: AppColor.cyan,
-              child: Text(
-                '01GAME',
-                style:
-                    GoogleFonts.bebasNeue(fontSize: 80, color: AppColor.white),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => CountUp()),
-              );
-            },
-            child: Card(
-              color: AppColor.red,
-              child: Text(
-                'BIG BULL',
-                style:
-                    GoogleFonts.bebasNeue(fontSize: 80, color: AppColor.white),
-                textAlign: TextAlign.center,
-              ),
+      body: Column(
+        children: [
+          UserProfileCard(),
+          Expanded(
+            child: ListView(
+              children: <Widget>[
+                GestureDetector(
+                  onTap: () {
+                    if (math.Random().nextBool()) {
+                      player.play(AssetSource("yoro.mp3"));
+                    } else {
+                      player.play(AssetSource("saaiku.mp3"));
+                    }
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => CountUp()),
+                    );
+                  },
+                  child: Card(
+                    color: AppColor.black,
+                    child: Text(
+                      'COUNT-UP',
+                      style: GoogleFonts.bebasNeue(
+                          fontSize: 80, color: AppColor.white),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => CountUp()),
+                    );
+                  },
+                  child: Card(
+                    color: AppColor.cyan,
+                    child: Text(
+                      '01GAME',
+                      style: GoogleFonts.bebasNeue(
+                          fontSize: 80, color: AppColor.white),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => DartsBoard()),
+                    );
+                  },
+                  child: Card(
+                    color: AppColor.red,
+                    child: Text(
+                      'BIG BULL',
+                      style: GoogleFonts.bebasNeue(
+                          fontSize: 80, color: AppColor.white),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],

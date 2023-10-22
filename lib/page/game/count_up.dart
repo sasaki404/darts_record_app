@@ -1,5 +1,5 @@
 import 'package:audioplayers/audioplayers.dart';
-import 'package:darts_record_app/database/count_up_record_db.dart';
+import 'package:darts_record_app/database/count_up_record_table.dart';
 import 'package:darts_record_app/page/game/count_up_result.dart';
 import 'package:darts_record_app/page/game/logic/calculator.dart';
 import 'package:darts_record_app/page/game/ui/counter_keyboard.dart';
@@ -20,7 +20,7 @@ class CountUp extends ConsumerWidget {
   int tempScore = 0; // ダブル、トリプルを考慮するための一時変数
   int whatNum = 0; // ラウンドごとで今何投目か
   final player = AudioPlayer();
-  final countUpRecordDB = CountUpRecordDB();
+  final countUpRecordTable = CountUpRecordTable();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -141,7 +141,7 @@ class CountUp extends ConsumerWidget {
                     );
                     // TODO:  マルチプレイ対応でuserIdをちゃんと指定する。スコアとかのstateも辞書型に変更してid:stateみたいな感じに
                     // レコード保存
-                    await countUpRecordDB.insert(
+                    await countUpRecordTable.insert(
                         userId: 1, score: score, scoreList: scoreList);
                   },
                   child: Text("Finish",

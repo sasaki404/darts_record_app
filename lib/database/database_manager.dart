@@ -1,4 +1,5 @@
-import 'package:darts_record_app/database/count_up_record_db.dart';
+import 'package:darts_record_app/database/count_up_record_table.dart';
+import 'package:darts_record_app/database/user_info_table.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -17,7 +18,7 @@ class DatabaseManager {
 
   // databaseのパスのゲッター
   Future<String> get fullPath async {
-    const name = 'count_up_record.db';
+    const name = 'darts_app.db';
     final path = await getDatabasesPath();
     return join(path, name);
   }
@@ -35,6 +36,8 @@ class DatabaseManager {
   }
 
   // テーブルを追加したら、ここに追記
-  Future<void> create(Database db, int ver) async =>
-      await CountUpRecordDB().createTable(db);
+  Future<void> create(Database db, int ver) async {
+    await CountUpRecordTable().createTable(db);
+    await UserInfoTable().createTable(db);
+  }
 }
