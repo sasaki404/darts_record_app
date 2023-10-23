@@ -1,6 +1,8 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:darts_record_app/kv/login_user_id.dart';
 import 'package:darts_record_app/page/common/user/user_profile_card.dart';
 import 'package:darts_record_app/page/game/count_up.dart';
+import 'package:darts_record_app/page/game/game_start.dart';
 import 'package:darts_record_app/page/game/ui/darts_board.dart';
 import 'package:darts_record_app/util/app_color.dart';
 import 'package:flutter/material.dart';
@@ -28,10 +30,14 @@ class ListPage extends StatelessWidget {
                     } else {
                       player.play(AssetSource("saaiku.mp3"));
                     }
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => CountUp()),
-                    );
+                    loadLoginUserId().then((value) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const GameStart(
+                                gameType: GameType.countUpGame)),
+                      );
+                    });
                   },
                   child: Card(
                     color: AppColor.black,

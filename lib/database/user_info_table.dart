@@ -32,7 +32,7 @@ class UserInfoTable {
   Future<List<UserInfo>> selectAll() async {
     final db = await DatabaseManager().database;
     final sql = '''
-        SELECT * from $tableName ORDER BY COALESCE(updated_at, created_at) DESC
+        SELECT * from $tableName
     ''';
     final res = await db.rawQuery(sql);
     return res.map((e) => UserInfo.fromSqfliteDatabase(e)).toList();

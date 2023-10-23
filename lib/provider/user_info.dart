@@ -21,7 +21,11 @@ class UserInfoNotifier extends _$UserInfoNotifier {
     state = AsyncData(await UserInfoTable().selectAll());
   }
 
-  Future<UserInfo> select(int id) {
-    return UserInfoTable().selectById(id);
+  Future<UserInfo> select(int id) async {
+    return await UserInfoTable().selectById(id);
+  }
+
+  Future<List<UserInfo>> selectAll() async {
+    return await UserInfoTable().selectAll();
   }
 }

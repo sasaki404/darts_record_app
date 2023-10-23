@@ -5,6 +5,7 @@ import 'package:darts_record_app/page/game/logic/calculator.dart';
 import 'package:darts_record_app/page/game/ui/counter_keyboard.dart';
 import 'package:darts_record_app/provider/counter_str.dart';
 import 'package:darts_record_app/provider/is_finished.dart';
+import 'package:darts_record_app/provider/player_list.dart';
 import 'package:darts_record_app/provider/round_number.dart';
 import 'package:darts_record_app/provider/round_score.dart';
 import 'package:darts_record_app/provider/score_list.dart';
@@ -29,6 +30,7 @@ class CountUp extends ConsumerWidget {
     // final roundScore = ref.watch(roundScoreNotifierProvider);
     // final scoreList = ref.watch(scoreListNotifierProvider);
     final isFinished = ref.watch(isFinishedNotifierProvider);
+    final playerList = ref.read(playerListNotifierProvider);
     final totalScoreNotifier = ref.watch(totalScoreNotifierProvider.notifier);
     final counterStrNotifier = ref.watch(counterStrNotifierProvider.notifier);
     final roundNumberNotifier = ref.watch(roundNumberNotifierProvider.notifier);
