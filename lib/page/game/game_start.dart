@@ -27,6 +27,7 @@ class GameStart extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final userInfo = ref.watch(userInfoNotifierProvider);
     final loginUserId = ref.watch(loginUserIdNotifierProvider);
+    final playerList = ref.watch(playerListNotifierProvider);
     return Scaffold(
         backgroundColor: AppColor.black,
         appBar: AppBar(
@@ -62,16 +63,15 @@ class GameStart extends ConsumerWidget {
                         ),
                       ],
                     )
-                  : userInfo.when(
-                      // whenメソッドでAsyncValueを使用
-                      data: (data) {
-                        List<Widget> userCardList = [];
-                        for (UserInfo info in data) {
-                          // readだとCountUpに行ったときにリセットされる
-                          ref
-                              .watch(playerListNotifierProvider.notifier)
-                              .push(info.name);
-                          userCardList.add(Row(
+                  : (() {
+                      List<Widget> userCardList = [];
+                      for (String name in playerList) {
+                        // ログインユーザを参加者リストに追加する
+                        // ref.watch(playerListNotifierProvider.notifier).push(
+                        //     UserInfo.createMapfromList(data)[value]!.name);
+                        // readだとCountUpに行ったときにリセットされる
+                        userCardList.add(
+                          Row(
                             children: [
                               Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -83,19 +83,9 @@ class GameStart extends ConsumerWidget {
                                     color: AppColor.white,
                                   ),
                                   Text(
-                                    info.name,
+                                    name,
                                     style: GoogleFonts.bebasNeue(
                                         fontSize: 20, color: AppColor.white),
-                                  ),
-                                  Text(
-                                    "Rating:${info.rating}",
-                                    style: const TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.normal,
-                                        color: AppColor.white),
-                                    textAlign: TextAlign.left,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 3,
                                   ),
                                 ],
                               ),
@@ -103,17 +93,15 @@ class GameStart extends ConsumerWidget {
                                 width: 40,
                               ),
                             ],
-                          ));
-                        }
-                        return Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: userCardList,
+                          ),
                         );
-                      },
-                      error: (error, stackTrace) => Text(error.toString()),
-                      loading: () => const CircularProgressIndicator(),
-                    ),
+                      }
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: userCardList,
+                      );
+                    })(),
               AsyncValue() => const CircularProgressIndicator(),
             },
             Row(
@@ -139,14 +127,18 @@ class GameStart extends ConsumerWidget {
                                   List<Widget> userCardList = [];
                                   for (UserInfo info in data) {
                                     // readだとCountUpに行ったときにリセットされる
-                                    ref
-                                        .watch(
-                                            playerListNotifierProvider.notifier)
-                                        .push(info.name);
                                     userCardList.add(Row(
                                       children: [
                                         TextButton(
-                                          onPressed: () {},
+                                          onPressed: () {
+                                            // 参加プレイヤーに追加
+                                            ref
+                                                .watch(
+                                                    playerListNotifierProvider
+                                                        .notifier)
+                                                .push(info.name);
+                                            Navigator.pop(context);
+                                          },
                                           child: Column(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.center,

@@ -14,7 +14,7 @@ class PlayerListNotifier extends _$PlayerListNotifier {
 
   void push(String name) {
     if (!state.contains(name)) {
-      state.add(name);
+      state = [...state, name];
       print(state);
     }
   }
