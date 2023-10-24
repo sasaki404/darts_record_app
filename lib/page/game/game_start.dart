@@ -112,7 +112,8 @@ class GameStart extends ConsumerWidget {
                         );
                       },
                       error: (error, stackTrace) => Text(error.toString()),
-                      loading: () => const CircularProgressIndicator()),
+                      loading: () => const CircularProgressIndicator(),
+                    ),
               AsyncValue() => const CircularProgressIndicator(),
             },
             Row(
@@ -124,14 +125,87 @@ class GameStart extends ConsumerWidget {
                     showDialog(
                         context: context,
                         builder: (_) {
-                          return UserRegistrationDialog(
-                            // すでにログインしているユーザがいるときは編集モード
-                            isEditMode: false,
-                            isLogin: false,
+                          return Container(
+                            color: AppColor.black,
+                            child: ListView(children: [
+                              UserRegistrationDialog(
+                                // すでにログインしているユーザがいるときは編集モード
+                                isEditMode: false,
+                                isLogin: false,
+                              ),
+                              userInfo.when(
+                                // whenメソッドでAsyncValueを使用
+                                data: (data) {
+                                  List<Widget> userCardList = [];
+                                  for (UserInfo info in data) {
+                                    // readだとCountUpに行ったときにリセットされる
+                                    ref
+                                        .watch(
+                                            playerListNotifierProvider.notifier)
+                                        .push(info.name);
+                                    userCardList.add(Row(
+                                      children: [
+                                        TextButton(
+                                          onPressed: () {},
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              const Icon(
+                                                Icons.account_circle,
+                                                size: 80,
+                                                color: AppColor.white,
+                                              ),
+                                              Text(
+                                                info.name,
+                                                style: GoogleFonts.bebasNeue(
+                                                  fontSize: 20,
+                                                  color: AppColor.white,
+                                                  decoration:
+                                                      TextDecoration.none,
+                                                ),
+                                              ),
+                                              Text(
+                                                "Rating:${info.rating}",
+                                                style: const TextStyle(
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.normal,
+                                                  color: AppColor.white,
+                                                  decoration:
+                                                      TextDecoration.none,
+                                                ),
+                                                textAlign: TextAlign.left,
+                                                overflow: TextOverflow.ellipsis,
+                                                maxLines: 3,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          width: 40,
+                                        ),
+                                      ],
+                                    ));
+                                  }
+                                  return Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: userCardList,
+                                  );
+                                },
+                                error: (error, stackTrace) =>
+                                    Text(error.toString()),
+                                loading: () =>
+                                    const CircularProgressIndicator(),
+                              ),
+                            ]),
                           );
                         });
                   },
-                  child: Icon(
+                  child: const Icon(
                     Icons.add_box,
                     size: 80,
                     color: AppColor.white,
