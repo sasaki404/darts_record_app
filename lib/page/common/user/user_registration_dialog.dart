@@ -83,12 +83,14 @@ class UserRegistrationDialog extends ConsumerWidget {
                 int id = await ref
                     .read(userInfoNotifierProvider.notifier)
                     .insert(controller.text);
-                ref.read(loginUserIdNotifierProvider.notifier).updateState(id);
+                if (isLogin) {
+                  ref
+                      .read(loginUserIdNotifierProvider.notifier)
+                      .updateState(id);
+                }
               } else {
                 ui.name = controller.text;
-                if (isLogin) {
-                  ref.read(userInfoNotifierProvider.notifier).updateState(ui);
-                }
+                ref.read(userInfoNotifierProvider.notifier).updateState(ui);
               }
               if (context.mounted) Navigator.pop(context);
             }

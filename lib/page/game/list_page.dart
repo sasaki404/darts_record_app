@@ -1,19 +1,23 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:darts_record_app/kv/login_user_id.dart';
+import 'package:darts_record_app/model/user_info.dart';
 import 'package:darts_record_app/page/common/user/user_profile_card.dart';
 import 'package:darts_record_app/page/game/count_up.dart';
 import 'package:darts_record_app/page/game/game_start.dart';
 import 'package:darts_record_app/page/game/ui/darts_board.dart';
+import 'package:darts_record_app/provider/player_list.dart';
+import 'package:darts_record_app/provider/user_info.dart';
 import 'package:darts_record_app/util/app_color.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:math' as math;
 
-class ListPage extends StatelessWidget {
+class ListPage extends ConsumerWidget {
   const ListPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final player = AudioPlayer();
     return Scaffold(
       backgroundColor: AppColor.darkGrey,
@@ -31,6 +35,12 @@ class ListPage extends StatelessWidget {
                       player.play(AssetSource("saaiku.mp3"));
                     }
                     loadLoginUserId().then((value) {
+                      ref.read(userInfoNotifierProvider).whenData((ui) {
+                        // ユーザが追加登録されたとき参加プレイヤーリストに追加
+                        ref
+                            .watch(playerListNotifierProvider.notifier)
+                            .push(UserInfo.createMapfromList(ui)[value]!.name);
+                      });
                       Navigator.push(
                         context,
                         MaterialPageRoute(

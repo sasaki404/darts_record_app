@@ -70,12 +70,17 @@ class GameStart extends ConsumerWidget {
                       ],
                     )
                   : (() {
+                      userInfo.whenData((ui) {
+                        // ユーザが追加登録されたとき参加プレイヤーリストに追加
+                        ref
+                            .watch(playerListNotifierProvider.notifier)
+                            .push(UserInfo.createMapfromList(ui)[value]!.name);
+                      });
                       List<Widget> userCardList = [];
                       for (String name in playerList) {
                         // ログインユーザを参加者リストに追加する
                         // ref.watch(playerListNotifierProvider.notifier).push(
                         //     UserInfo.createMapfromList(data)[value]!.name);
-                        // readだとCountUpに行ったときにリセットされる
                         userCardList.add(
                           Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -119,7 +124,6 @@ class GameStart extends ConsumerWidget {
                             color: AppColor.black,
                             child: ListView(children: [
                               UserRegistrationDialog(
-                                // すでにログインしているユーザがいるときは編集モード
                                 isEditMode: false,
                                 isLogin: false,
                               ),
@@ -218,7 +222,7 @@ class GameStart extends ConsumerWidget {
                 );
               },
               child: Card(
-                color: Color.fromARGB(255, 183, 2, 2),
+                color: const Color.fromARGB(255, 183, 2, 2),
                 child: Text(
                   'GAME START!',
                   style: GoogleFonts.bebasNeue(
