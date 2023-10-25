@@ -76,21 +76,78 @@ class GameStart extends ConsumerWidget {
                         // ref.watch(playerListNotifierProvider.notifier).push(
                         //     UserInfo.createMapfromList(data)[value]!.name);
                         userCardList.add(
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              const Icon(
-                                Icons.account_circle,
-                                size: 80,
-                                color: AppColor.white,
-                              ),
-                              Text(
-                                name,
-                                style: GoogleFonts.bebasNeue(
-                                    fontSize: 20, color: AppColor.white),
-                              ),
-                            ],
+                          TextButton(
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (_) {
+                                  return AlertDialog(
+                                    title: const Text(
+                                      "Remove this user?",
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    actions: [
+                                      GestureDetector(
+                                        child: Container(
+                                          padding: const EdgeInsets.only(
+                                              top: 16,
+                                              right: 8,
+                                              bottom: 16,
+                                              left: 16),
+                                          child: const Text('No'),
+                                        ),
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                        },
+                                      ),
+                                      GestureDetector(
+                                        child: Container(
+                                          padding: const EdgeInsets.only(
+                                              top: 16,
+                                              right: 8,
+                                              bottom: 16,
+                                              left: 16),
+                                          child: const Text('Yes'),
+                                        ),
+                                        onTap: () {
+                                          ref
+                                              .watch(playerListNotifierProvider
+                                                  .notifier)
+                                              .remove(name);
+                                          // popだけだと画面が更新されない。とりあえず動作はOKだが要検討
+                                          Navigator.pop(context);
+                                          Navigator.of(context).pushReplacement(
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  GameStart(gameType: gameType),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  Icons.account_circle,
+                                  size: 80,
+                                  color: AppColor.white,
+                                ),
+                                Text(
+                                  name,
+                                  style: GoogleFonts.bebasNeue(
+                                      fontSize: 20, color: AppColor.white),
+                                ),
+                              ],
+                            ),
                           ),
                         );
                       }
