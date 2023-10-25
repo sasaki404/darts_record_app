@@ -70,12 +70,6 @@ class GameStart extends ConsumerWidget {
                       ],
                     )
                   : (() {
-                      userInfo.whenData((ui) {
-                        // ユーザが追加登録されたとき参加プレイヤーリストに追加
-                        ref
-                            .watch(playerListNotifierProvider.notifier)
-                            .push(UserInfo.createMapfromList(ui)[value]!.name);
-                      });
                       List<Widget> userCardList = [];
                       for (String name in playerList) {
                         // ログインユーザを参加者リストに追加する
