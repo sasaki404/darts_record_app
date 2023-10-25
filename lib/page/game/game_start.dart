@@ -28,6 +28,12 @@ class GameStart extends ConsumerWidget {
     final userInfo = ref.watch(userInfoNotifierProvider);
     final loginUserId = ref.watch(loginUserIdNotifierProvider);
     final playerList = ref.watch(playerListNotifierProvider);
+    ref.listen(userInfoNotifierProvider, (prev, next) {
+      next.whenData((value) {
+        // ユーザが追加登録されたとき参加プレイヤーリストに追加
+        ref.watch(playerListNotifierProvider.notifier).push(value.last.name);
+      });
+    });
     return Scaffold(
         backgroundColor: AppColor.black,
         appBar: AppBar(
@@ -71,35 +77,31 @@ class GameStart extends ConsumerWidget {
                         //     UserInfo.createMapfromList(data)[value]!.name);
                         // readだとCountUpに行ったときにリセットされる
                         userCardList.add(
-                          Row(
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  const Icon(
-                                    Icons.account_circle,
-                                    size: 80,
-                                    color: AppColor.white,
-                                  ),
-                                  Text(
-                                    name,
-                                    style: GoogleFonts.bebasNeue(
-                                        fontSize: 20, color: AppColor.white),
-                                  ),
-                                ],
+                              const Icon(
+                                Icons.account_circle,
+                                size: 80,
+                                color: AppColor.white,
                               ),
-                              const SizedBox(
-                                width: 40,
+                              Text(
+                                name,
+                                style: GoogleFonts.bebasNeue(
+                                    fontSize: 20, color: AppColor.white),
                               ),
                             ],
                           ),
                         );
                       }
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: userCardList,
+                      return Container(
+                        padding: const EdgeInsets.all(20),
+                        child: Wrap(
+                          spacing: 30,
+                          direction: Axis.horizontal,
+                          children: userCardList,
+                        ),
                       );
                     })(),
               AsyncValue() => const CircularProgressIndicator(),
@@ -127,65 +129,59 @@ class GameStart extends ConsumerWidget {
                                   List<Widget> userCardList = [];
                                   for (UserInfo info in data) {
                                     // readだとCountUpに行ったときにリセットされる
-                                    userCardList.add(Row(
-                                      children: [
-                                        TextButton(
-                                          onPressed: () {
-                                            // 参加プレイヤーに追加
-                                            ref
-                                                .watch(
-                                                    playerListNotifierProvider
-                                                        .notifier)
-                                                .push(info.name);
-                                            Navigator.pop(context);
-                                          },
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              const Icon(
-                                                Icons.account_circle,
-                                                size: 80,
+                                    userCardList.add(
+                                      TextButton(
+                                        onPressed: () {
+                                          // 参加プレイヤーに追加
+                                          ref
+                                              .watch(playerListNotifierProvider
+                                                  .notifier)
+                                              .push(info.name);
+                                          Navigator.pop(context);
+                                        },
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            const Icon(
+                                              Icons.account_circle,
+                                              size: 80,
+                                              color: AppColor.white,
+                                            ),
+                                            Text(
+                                              info.name,
+                                              style: GoogleFonts.bebasNeue(
+                                                fontSize: 20,
                                                 color: AppColor.white,
+                                                decoration: TextDecoration.none,
                                               ),
-                                              Text(
-                                                info.name,
-                                                style: GoogleFonts.bebasNeue(
-                                                  fontSize: 20,
-                                                  color: AppColor.white,
-                                                  decoration:
-                                                      TextDecoration.none,
-                                                ),
+                                            ),
+                                            Text(
+                                              "Rating:${info.rating}",
+                                              style: const TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.normal,
+                                                color: AppColor.white,
+                                                decoration: TextDecoration.none,
                                               ),
-                                              Text(
-                                                "Rating:${info.rating}",
-                                                style: const TextStyle(
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.normal,
-                                                  color: AppColor.white,
-                                                  decoration:
-                                                      TextDecoration.none,
-                                                ),
-                                                textAlign: TextAlign.left,
-                                                overflow: TextOverflow.ellipsis,
-                                                maxLines: 3,
-                                              ),
-                                            ],
-                                          ),
+                                              textAlign: TextAlign.left,
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 3,
+                                            ),
+                                          ],
                                         ),
-                                        const SizedBox(
-                                          width: 40,
-                                        ),
-                                      ],
-                                    ));
+                                      ),
+                                    );
                                   }
-                                  return Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: userCardList,
+                                  return Container(
+                                    padding: const EdgeInsets.all(20),
+                                    child: Wrap(
+                                      spacing: 30,
+                                      direction: Axis.horizontal,
+                                      children: userCardList,
+                                    ),
                                   );
                                 },
                                 error: (error, stackTrace) =>
