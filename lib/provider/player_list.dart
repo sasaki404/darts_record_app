@@ -19,6 +19,13 @@ class PlayerListNotifier extends _$PlayerListNotifier {
     }
   }
 
+  void remove(String name) {
+    List<String> old = state;
+    old.remove(name);
+    state = old;
+    print(state);
+  }
+
   void clean() {
     state = [];
   }
