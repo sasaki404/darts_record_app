@@ -7,7 +7,7 @@ part of 'player_list.dart';
 // **************************************************************************
 
 String _$playerListNotifierHash() =>
-    r'fcd1b81676e43cd1023d7ede0b3695cd92bb322a';
+    r'589535185de43300d5850efbe1a978e480df5784';
 
 /// See also [PlayerListNotifier].
 @ProviderFor(PlayerListNotifier)
