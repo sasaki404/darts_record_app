@@ -4,6 +4,7 @@ import 'package:darts_record_app/page/game/count_up_result.dart';
 import 'package:darts_record_app/page/game/logic/calculator.dart';
 import 'package:darts_record_app/page/game/ui/counter_keyboard.dart';
 import 'package:darts_record_app/provider/counter_str.dart';
+import 'package:darts_record_app/provider/current_player_index.dart';
 import 'package:darts_record_app/provider/is_finished.dart';
 import 'package:darts_record_app/provider/player_list.dart';
 import 'package:darts_record_app/provider/round_number.dart';
@@ -25,27 +26,40 @@ class CountUp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // State
     final totalScore = ref.watch(totalScoreNotifierProvider);
     final roundNumber = ref.watch(roundNumberNotifierProvider);
     // final roundScore = ref.watch(roundScoreNotifierProvider);
     // final scoreList = ref.watch(scoreListNotifierProvider);
     final isFinished = ref.watch(isFinishedNotifierProvider);
-    final playerList = ref.read(playerListNotifierProvider);
+    final playerList = ref.watch(playerListNotifierProvider);
+    final currentPlayerIndex = ref.watch(currentPlayerIndexNotifierProvider);
+
+    // Notifier
     final totalScoreNotifier = ref.watch(totalScoreNotifierProvider.notifier);
     final counterStrNotifier = ref.watch(counterStrNotifierProvider.notifier);
     final roundNumberNotifier = ref.watch(roundNumberNotifierProvider.notifier);
     final scoreListNotifier = ref.watch(scoreListNotifierProvider.notifier);
-    print('scoreListNotifierProvider: ${ref.watch(scoreListNotifierProvider)}');
-    final roundScoreNotifier = ref.watch(roundScoreNotifierProvider.notifier);
+    // print('scoreListNotifierProvider: ${ref.watch(scoreListNotifierProvider)}');
+    // TODO:ラウンドでn投目のスコアを表示させたいときに使う
+    // final roundScoreNotifier = ref.watch(roundScoreNotifierProvider.notifier);
     final isFinishedNotifier = ref.watch(isFinishedNotifierProvider.notifier);
+    final currentPlayerIndexNofiter =
+        ref.watch(currentPlayerIndexNotifierProvider.notifier);
+
+    // 得点の入力イベントのコールバック
     ref.listen(counterStrNotifierProvider, (prevState, nextState) {
+      // TODO: 'wait'、'wait-result'は定数定義クラスを別で作成してそこで定数化するべき
       if (nextState.startsWith('wait') || roundNumber > 8) {
+        // 'wait-resulth'はリザルト画面でボタンを押したときに設定される
         if (nextState == 'wait-result') {
           tempScore = 0;
           whatNum = 0;
         }
         return;
       }
+
+      // スコアの計算
       int prevScore = totalScore;
       int score = Calculator.toScore(nextState);
       if (score < 0) {
@@ -54,19 +68,24 @@ class CountUp extends ConsumerWidget {
       } else if (nextState.toUpperCase() == 'CANCEL' &&
           prevState != null &&
           prevState.startsWith('wait')) {
-        // キャンセルボタンが押されて、Redoスタックがあるとき
+        // キャンセルボタンが押されたとき
+
+        // n-1投目にする
+        whatNum -= 1;
+        if (whatNum == -1) {
+          if (roundNumber == 1) {
+            whatNum = 0;
+          } else {
+            // ラウンドの始まり
+            whatNum = 2;
+            roundNumberNotifier.toPrevRound();
+          }
+        }
+
         if (tempScore >= 0) {
+          // Redoスタックの先頭にスコアがあるとき
           scoreListNotifier.pop();
           totalScoreNotifier.updateState(scoreListNotifier.sum());
-        }
-        if (tempScore == 0 && whatNum == 0) {
-          // ダブル、トリプル以外でラウンドの始まり
-          whatNum = 2;
-          roundNumberNotifier.toPrevRound();
-        }
-        if (tempScore == 0) {
-          // ダブルトリプル以外
-          whatNum -= 1;
         }
         tempScore = 0;
       } else if (tempScore < 0 && !nextState.startsWith('wait')) {
@@ -84,18 +103,21 @@ class CountUp extends ConsumerWidget {
         scoreListNotifier.push(score);
         whatNum += 1;
       }
-      if (roundNumber >= 8 && whatNum >= 3) {
-        // ゲーム終了できるとき
-        isFinishedNotifier.updateState(true);
-        return;
-      }
-      // 二連ちゃんで同じスコアだったらリスナーがスコアの選択を検知できんからステートを更新しとる
+
+      // 二連続で同じスコアだったらリスナーがスコアの選択を検知でないから待機状態ステートに更新
       counterStrNotifier.updateState('wait:$prevScore');
+
+      // 3回投げたとき
       if (whatNum >= 3) {
+        if (roundNumber >= 8) {
+          // ゲーム終了できるとき
+          isFinishedNotifier.updateState(true);
+          return;
+        }
         // ラウンド終了のとき
         roundNumberNotifier.updateState(roundNumber + 1);
         whatNum = 0;
-        roundScoreNotifier.clean();
+        // roundScoreNotifier.clean();
         player.play(AssetSource("next.mp3"));
       }
     });
@@ -107,6 +129,7 @@ class CountUp extends ConsumerWidget {
     //     roundScoreNotifier.push(nextState[i]);
     //   }
     // });
+
     return Scaffold(
       backgroundColor: AppColor.black,
       appBar: AppBar(
@@ -121,16 +144,48 @@ class CountUp extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
+          // ラウンド数を表示
           Text(
             (roundNumber <= 8) ? 'ROUND $roundNumber/8' : 'ROUND 8/8',
             style: GoogleFonts.bebasNeue(color: AppColor.white, fontSize: 35),
           ),
-          // 得点を表示
-          Text(
-            totalScore.toString(),
-            style: GoogleFonts.bebasNeue(color: AppColor.white, fontSize: 120),
-            textAlign: TextAlign.center,
-          ),
+
+          // プレイヤーごとに得点を表示
+          (() {
+            List<Widget> playerScoreDisplayList = [];
+            print('playerList:${playerList}');
+            int index = 0;
+            for (var e in playerList) {
+              playerScoreDisplayList.add(
+                Column(
+                  children: [
+                    Text(
+                      e,
+                      style: GoogleFonts.bebasNeue(
+                          color: (currentPlayerIndex == index)
+                              ? AppColor.red
+                              : AppColor.white,
+                          fontSize: 15),
+                      textAlign: TextAlign.center,
+                    ),
+                    Text(
+                      totalScore.toString(),
+                      style: GoogleFonts.bebasNeue(
+                          color: AppColor.white, fontSize: 60),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              );
+              index += 1;
+            }
+            return Wrap(
+              spacing: 100,
+              children: playerScoreDisplayList,
+            );
+          })(),
+
+          // 終了したとき
           isFinished
               ? ElevatedButton(
                   onPressed: () async {
@@ -159,7 +214,9 @@ class CountUp extends ConsumerWidget {
           //           ))
           //       .toList(),
           // ),
-          CounterKeyboard(),
+
+          // 得点入力
+          const CounterKeyboard(),
         ],
       ),
     );
