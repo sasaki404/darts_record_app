@@ -4,17 +4,22 @@ part 'total_score.g.dart';
 @riverpod
 class TotalScoreNotifier extends _$TotalScoreNotifier {
   @override
-  int build() {
-    return 0;
+  Map<String, int> build() {
+    return {};
   }
 
   // 状態を更新する
-  void updateState(int cnt) {
-    state = cnt;
+  void updateState(String key, int cnt) {
+    final old = state;
+    old[key] = cnt;
+    state = old;
   }
 
   // スコアを加算する
-  void addScore(int cnt) {
-    state += cnt;
+  void addScore(String key, int cnt) {
+    final old = state;
+    old.putIfAbsent(key, () => 0);
+    old[key] = old[key]! + cnt;
+    state = old;
   }
 }

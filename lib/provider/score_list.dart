@@ -4,32 +4,38 @@ part 'score_list.g.dart';
 @riverpod
 class ScoreListNotifier extends _$ScoreListNotifier {
   @override
-  List<int> build() {
-    return [];
+  Map<String, List<int>> build() {
+    return {};
   }
 
-  int pop() {
-    print(state);
-    if (state.isEmpty) {
+  int pop(String key) {
+    print(state[key]);
+    if (!state.containsKey(key) || state[key]!.isEmpty) {
       return 0;
     }
-    return state.removeLast();
+    return state[key]!.removeLast();
   }
 
-  void push(int score) {
-    state.add(score);
+  void push(String key, int score) {
+    final old = state;
+    old.putIfAbsent(key, () => []);
+    old[key]!.add(score);
+    state = old;
     print(state);
   }
 
-  int sum() {
+  int sum(String key) {
+    if (!state.containsKey(key)) {
+      return 0;
+    }
     int ans = 0;
-    for (int i = 0; i < state.length; i++) {
-      ans += state[i];
+    for (int i = 0; i < state[key]!.length; i++) {
+      ans += state[key]![i];
     }
     return ans;
   }
 
   void clean() {
-    state = [];
+    state = {};
   }
 }

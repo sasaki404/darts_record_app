@@ -6,12 +6,12 @@ part of 'score_list.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$scoreListNotifierHash() => r'5ca6fe894abed45aa06cbbe64e7982fce1429e4e';
+String _$scoreListNotifierHash() => r'11aed54ba6a38f4f5a4952ab6bfa623029b00473';
 
 /// See also [ScoreListNotifier].
 @ProviderFor(ScoreListNotifier)
-final scoreListNotifierProvider =
-    AutoDisposeNotifierProvider<ScoreListNotifier, List<int>>.internal(
+final scoreListNotifierProvider = AutoDisposeNotifierProvider<ScoreListNotifier,
+    Map<String, List<int>>>.internal(
   ScoreListNotifier.new,
   name: r'scoreListNotifierProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -21,6 +21,6 @@ final scoreListNotifierProvider =
   allTransitiveDependencies: null,
 );
 
-typedef _$ScoreListNotifier = AutoDisposeNotifier<List<int>>;
+typedef _$ScoreListNotifier = AutoDisposeNotifier<Map<String, List<int>>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
