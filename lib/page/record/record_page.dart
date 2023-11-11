@@ -22,7 +22,7 @@ class RecordPageState extends ConsumerState<RecordPage> {
   void initState() {
     super.initState();
     setState(() {
-      countUpRecords = countUpRecordDB.selectByUserId(1);
+      countUpRecords = countUpRecordDB.selectAll();
     });
   }
 
