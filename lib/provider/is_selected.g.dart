@@ -1,27 +1,27 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'total_score.dart';
+part of 'is_selected.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$totalScoreNotifierHash() =>
-    r'93cbfb8415b13bc29e2f728740909ffcc533bce7';
+String _$isSelectedNotifierHash() =>
+    r'acd980116171f164fbb52f6217c8c4fd6a5c2728';
 
-/// See also [TotalScoreNotifier].
-@ProviderFor(TotalScoreNotifier)
-final totalScoreNotifierProvider =
-    AutoDisposeNotifierProvider<TotalScoreNotifier, Map<String, int>>.internal(
-  TotalScoreNotifier.new,
-  name: r'totalScoreNotifierProvider',
+/// See also [IsSelectedNotifier].
+@ProviderFor(IsSelectedNotifier)
+final isSelectedNotifierProvider =
+    AutoDisposeNotifierProvider<IsSelectedNotifier, bool>.internal(
+  IsSelectedNotifier.new,
+  name: r'isSelectedNotifierProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$totalScoreNotifierHash,
+      : _$isSelectedNotifierHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$TotalScoreNotifier = AutoDisposeNotifier<Map<String, int>>;
+typedef _$IsSelectedNotifier = AutoDisposeNotifier<bool>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

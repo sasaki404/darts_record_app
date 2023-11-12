@@ -47,6 +47,15 @@ class UserInfoTable {
     return UserInfo.fromSqfliteDatabase(res.first);
   }
 
+  Future<int> selectIdByName(String name) async {
+    final db = await DatabaseManager().database;
+    final sql = '''
+        SELECT * from $tableName WHERE name = ?
+    ''';
+    final res = await db.rawQuery(sql, [name]);
+    return UserInfo.fromSqfliteDatabase(res.first).id;
+  }
+
   Future<void> update(UserInfo info) async {
     final db = await DatabaseManager().database;
     final sql = '''
