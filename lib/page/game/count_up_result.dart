@@ -3,6 +3,7 @@ import 'package:darts_record_app/page/game/count_up.dart';
 import 'package:darts_record_app/page/home_page.dart';
 import 'package:darts_record_app/provider/counter_str.dart';
 import 'package:darts_record_app/provider/is_finished.dart';
+import 'package:darts_record_app/provider/player_list.dart';
 import 'package:darts_record_app/provider/round_number.dart';
 import 'package:darts_record_app/provider/score_list.dart';
 import 'package:darts_record_app/provider/total_score.dart';
@@ -17,21 +18,45 @@ class CountUpResult extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final playerList = ref.watch(playerListNotifierProvider);
     final totalScore = ref.read(totalScoreNotifierProvider);
-    double score = totalScore / 8;
+    List<Widget> resultList = [];
+    for (var player in playerList) {
+      double score = totalScore[player]! / 8;
+      resultList.add(
+        Column(
+          children: [
+            Text(player,
+                style: GoogleFonts.bebasNeue(
+                  color: AppColor.black,
+                  fontSize: 30,
+                )),
+            Text(
+              totalScore[player].toString(),
+              style: GoogleFonts.bebasNeue(color: AppColor.black, fontSize: 60),
+            ),
+            Text(
+              "STATS : $score",
+              style: GoogleFonts.bebasNeue(color: AppColor.black, fontSize: 20),
+            ),
+          ],
+        ),
+      );
+    }
     return Scaffold(
       body: Column(
         children: [
-          const SizedBox(height: 60),
           Text("RESULT",
               style:
                   GoogleFonts.bebasNeue(color: AppColor.black, fontSize: 50)),
-          Text(totalScore.toString(),
-              style:
-                  GoogleFonts.bebasNeue(color: AppColor.black, fontSize: 120)),
-          Text("STATS : $score",
-              style:
-                  GoogleFonts.bebasNeue(color: AppColor.black, fontSize: 40)),
+          const SizedBox(height: 60),
+          Wrap(
+            spacing: 30,
+            children: resultList,
+          ),
+          const SizedBox(
+            height: 30,
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -48,7 +73,9 @@ class CountUpResult extends ConsumerWidget {
                         ref.read(isFinishedNotifierProvider.notifier);
                     final countStrNotifier =
                         ref.read(counterStrNotifierProvider.notifier);
-                    totalScoreNotifier.updateState(0);
+                    for (var s in playerList) {
+                      totalScoreNotifier.updateState(s, 0);
+                    }
                     roundNumberNotifier.updateState(1);
                     isFinishedNotifer.updateState(false);
                     countStrNotifier.updateState('wait-result');
@@ -63,6 +90,7 @@ class CountUpResult extends ConsumerWidget {
                       style: GoogleFonts.bebasNeue(
                           color: AppColor.black, fontSize: 30))),
               const SizedBox(
+                height: 30,
                 width: 30,
               ),
               ElevatedButton(
@@ -78,7 +106,9 @@ class CountUpResult extends ConsumerWidget {
                         ref.read(isFinishedNotifierProvider.notifier);
                     final countStrNotifier =
                         ref.read(counterStrNotifierProvider.notifier);
-                    totalScoreNotifier.updateState(0);
+                    for (var s in playerList) {
+                      totalScoreNotifier.updateState(s, 0);
+                    }
                     roundNumberNotifier.updateState(1);
                     isFinishedNotifer.updateState(false);
                     countStrNotifier.updateState('wait-result');
