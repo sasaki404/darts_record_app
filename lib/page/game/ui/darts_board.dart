@@ -32,17 +32,31 @@ class _DartsBoardWidgetState extends State<DartsBoardWidget> {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
+    final double centerX = SizeConfig.blockSizeHorizontal! * 80;
+    final double centerY = SizeConfig.blockSizeVertical! * 50;
+    const diffAngle = (360 / 20) * (pi / 180);
+    print(diffAngle);
+    final double elevenEndAngle = -3;
     return GestureDetector(
       onTapUp: (TapUpDetails details) {
-        double x = details.localPosition.dx;
-        double y = details.localPosition.dy;
+        // タップされた座標を取得
+        final RenderBox renderBox = context.findRenderObject() as RenderBox;
+        final localPosition = renderBox.globalToLocal(details.globalPosition);
 
-        int sectionIndex =
-            calculateSectionIndex(x, y, MediaQuery.of(context).size);
-        print(x);
-        print(y);
-        tappedSectionScore = getSectionScore(sectionIndex);
-        print('Tapped Section Score: $tappedSectionScore');
+        // タップされた座標をダーツボードの中心からの距離と角度に変換
+        final dx = localPosition.dx - centerX / 2;
+        final dy = localPosition.dy - centerY / 2;
+        final tapDistance = sqrt(dx * dx + dy * dy);
+        final tapAngle = atan2(dy, dx);
+        print(tapAngle - elevenEndAngle);
+
+        // タップされたセクションの得点を計算
+        final sectionIndex = ((tapAngle - elevenEndAngle) / diffAngle).floor();
+        print(tapAngle);
+        final tappedSectionScore = sectionIndex + 1;
+
+        // タップされたセクションに対する処理を行う
+        print('タップされたセクション: $tappedSectionScore');
       },
       child: CustomPaint(
         size: Size(SizeConfig.blockSizeHorizontal! * 80,
