@@ -2,7 +2,6 @@
 
 import 'dart:math';
 import 'package:darts_record_app/page/game/ui/darts_board_painter.dart';
-import 'package:darts_record_app/util/app_color.dart';
 import 'package:darts_record_app/util/size_config.dart';
 import 'package:flutter/material.dart';
 
@@ -27,16 +26,37 @@ class DartsBoardWidget extends StatefulWidget {
 }
 
 class _DartsBoardWidgetState extends State<DartsBoardWidget> {
-  int? tappedSectionScore;
+  final List<int> tokuten = [
+    11,
+    14,
+    9,
+    12,
+    5,
+    20,
+    1,
+    18,
+    4,
+    13,
+    6,
+    10,
+    15,
+    2,
+    17,
+    3,
+    19,
+    7,
+    16,
+    8,
+    11
+  ];
+  final diffAngle = (360 / 20) * (pi / 180);
+  final double elevenEndAngle = -3;
 
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     final double centerX = SizeConfig.blockSizeHorizontal! * 80;
     final double centerY = SizeConfig.blockSizeVertical! * 50;
-    const diffAngle = (360 / 20) * (pi / 180);
-    print(diffAngle);
-    final double elevenEndAngle = -3;
     return GestureDetector(
       onTapUp: (TapUpDetails details) {
         // タップされた座標を取得
@@ -48,20 +68,25 @@ class _DartsBoardWidgetState extends State<DartsBoardWidget> {
         final dy = localPosition.dy - centerY / 2;
         final tapDistance = sqrt(dx * dx + dy * dy);
         final tapAngle = atan2(dy, dx);
-        print(tapAngle - elevenEndAngle);
 
         // タップされたセクションの得点を計算
         final sectionIndex = ((tapAngle - elevenEndAngle) / diffAngle).floor();
-        print(tapAngle);
-        final tappedSectionScore = sectionIndex + 1;
-
-        // タップされたセクションに対する処理を行う
-        print('タップされたセクション: $tappedSectionScore');
+        int score = tokuten[sectionIndex + 1];
+        if (77 <= tapDistance && tapDistance <= 95) {
+          // トリプル
+          score *= 3;
+        } else if (153 <= tapDistance && tapDistance <= 172) {
+          // ダブル
+          score *= 2;
+        } else if (10 <= tapDistance && tapDistance <= 27) {
+          score = 50;
+        } else if (tapDistance < 10) {
+          score = 50;
+        }
       },
       child: CustomPaint(
-        size: Size(SizeConfig.blockSizeHorizontal! * 80,
-            SizeConfig.blockSizeVertical! * 50),
-        painter: DartsBoardPainter(tappedSectionScore),
+        size: Size(centerX, centerY),
+        painter: DartsBoardPainter(),
       ),
     );
   }

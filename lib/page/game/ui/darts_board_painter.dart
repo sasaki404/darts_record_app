@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class DartsBoardPainter extends CustomPainter {
-  DartsBoardPainter(int? tappedSectionScore);
   final displayScoreStrList = [
     "17",
     "3",
@@ -40,7 +39,6 @@ class DartsBoardPainter extends CustomPainter {
 
     // ダーツボードの外側の円を描画
     canvas.drawCircle(Offset(centerX, centerY), boardRadius, paint);
-
     // ダーツボードのセクションを描画
     final sectionPaint = Paint()
       ..style = PaintingStyle.fill
@@ -124,7 +122,7 @@ class DartsBoardPainter extends CustomPainter {
         final tripleRingPaint = Paint()
           ..color = AppColor.blue
           ..style = PaintingStyle.stroke
-          ..strokeWidth = 12.0;
+          ..strokeWidth = 15.0;
         canvas.drawArc(
           Rect.fromCircle(
               center: Offset(centerX, centerY), radius: boardRadius * 0.5),
@@ -137,7 +135,7 @@ class DartsBoardPainter extends CustomPainter {
         final tripleRingPaint = Paint()
           ..color = Colors.red
           ..style = PaintingStyle.stroke
-          ..strokeWidth = 12.0;
+          ..strokeWidth = 15.0;
         canvas.drawArc(
           Rect.fromCircle(
               center: Offset(centerX, centerY), radius: boardRadius * 0.5),
