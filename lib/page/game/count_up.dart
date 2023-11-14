@@ -4,6 +4,7 @@ import 'package:darts_record_app/database/user_info_table.dart';
 import 'package:darts_record_app/page/game/count_up_result.dart';
 import 'package:darts_record_app/page/game/logic/calculator.dart';
 import 'package:darts_record_app/page/game/ui/counter_keyboard.dart';
+import 'package:darts_record_app/page/game/ui/darts_board.dart';
 import 'package:darts_record_app/provider/counter_str.dart';
 import 'package:darts_record_app/provider/current_player_index.dart';
 import 'package:darts_record_app/provider/is_finished.dart';
@@ -235,9 +236,11 @@ class CountUp extends ConsumerWidget {
           //           ))
           //       .toList(),
           // ),
-
+          const SizedBox(
+            height: 30,
+          ),
           // 得点入力
-          const CounterKeyboard(),
+          Center(child: const DartsBoard()),
         ],
       ),
     );

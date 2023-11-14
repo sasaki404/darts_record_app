@@ -2,30 +2,19 @@
 
 import 'dart:math';
 import 'package:darts_record_app/page/game/ui/darts_board_painter.dart';
+import 'package:darts_record_app/provider/counter_str.dart';
 import 'package:darts_record_app/util/size_config.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class DartsBoard extends StatelessWidget {
+class DartsBoard extends ConsumerStatefulWidget {
   const DartsBoard({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: DartsBoardWidget(),
-      ),
-    );
-  }
-}
-
-class DartsBoardWidget extends StatefulWidget {
-  const DartsBoardWidget({super.key});
 
   @override
   _DartsBoardWidgetState createState() => _DartsBoardWidgetState();
 }
 
-class _DartsBoardWidgetState extends State<DartsBoardWidget> {
+class _DartsBoardWidgetState extends ConsumerState<DartsBoard> {
   final List<int> tokuten = [
     11,
     14,
@@ -83,6 +72,8 @@ class _DartsBoardWidgetState extends State<DartsBoardWidget> {
         } else if (tapDistance < 10) {
           score = 50;
         }
+        final notifier = ref.watch(counterStrNotifierProvider.notifier);
+        notifier.updateState(score.toString());
       },
       child: CustomPaint(
         size: Size(centerX, centerY),

@@ -105,7 +105,7 @@ class DartsBoardPainter extends CustomPainter {
       final textPainter = TextPainter(
         text: TextSpan(
             text: sectionText,
-            style: GoogleFonts.bebasNeue(fontSize: 20, color: AppColor.black)),
+            style: GoogleFonts.bebasNeue(fontSize: 20, color: AppColor.white)),
         textDirection: TextDirection.ltr,
       );
 
