@@ -7,6 +7,7 @@ import 'package:darts_record_app/page/game/ui/counter_keyboard.dart';
 import 'package:darts_record_app/page/game/ui/darts_board.dart';
 import 'package:darts_record_app/provider/counter_str.dart';
 import 'package:darts_record_app/provider/current_player_index.dart';
+import 'package:darts_record_app/provider/is_darts_board_display.dart';
 import 'package:darts_record_app/provider/is_finished.dart';
 import 'package:darts_record_app/provider/is_selected.dart';
 import 'package:darts_record_app/provider/player_list.dart';
@@ -34,6 +35,7 @@ class CountUp extends ConsumerWidget {
     // final roundScore = ref.watch(roundScoreNotifierProvider);
     // final scoreList = ref.watch(scoreListNotifierProvider);
     final isFinished = ref.watch(isFinishedNotifierProvider);
+    final isDartBoardDisplay = ref.watch(isDartsBoardDisplayNotifierProvider);
     final playerList = ref.watch(playerListNotifierProvider);
     final currentPlayerIndex = ref.watch(currentPlayerIndexNotifierProvider);
 
@@ -47,6 +49,8 @@ class CountUp extends ConsumerWidget {
     // TODO:ラウンドでn投目のスコアを表示させたいときに使う
     // final roundScoreNotifier = ref.watch(roundScoreNotifierProvider.notifier);
     final isFinishedNotifier = ref.watch(isFinishedNotifierProvider.notifier);
+    final isDartsBoardDisplayNotifier =
+        ref.watch(isDartsBoardDisplayNotifierProvider.notifier);
     final currentPlayerIndexNofiter =
         ref.watch(currentPlayerIndexNotifierProvider.notifier);
 
@@ -152,6 +156,13 @@ class CountUp extends ConsumerWidget {
           style: GoogleFonts.bebasNeue(fontSize: 50, color: AppColor.black),
           textAlign: TextAlign.center,
         ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.repeat),
+            onPressed: () =>
+                {isDartsBoardDisplayNotifier.updateState(!isDartBoardDisplay)},
+          ),
+        ],
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -240,7 +251,9 @@ class CountUp extends ConsumerWidget {
             height: 30,
           ),
           // 得点入力
-          Center(child: const DartsBoard()),
+          isDartBoardDisplay
+              ? Center(child: const DartsBoard())
+              : CounterKeyboard(),
         ],
       ),
     );
