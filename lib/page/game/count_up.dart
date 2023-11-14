@@ -254,6 +254,19 @@ class CountUp extends ConsumerWidget {
           ),
           // 得点入力
           isDartBoardDisplay ? Center(child: DartsBoard()) : CounterKeyboard(),
+          SizedBox(
+            height: SizeConfig.blockSizeVertical! * 7,
+          ),
+          isDartBoardDisplay
+              ? ElevatedButton(
+                  onPressed: () {
+                    audioPlayer.play(AssetSource("cancel.mp3"));
+                    counterStrNotifier.updateState("CANCEL");
+                  },
+                  child: Text("CANCEL",
+                      style: GoogleFonts.bebasNeue(
+                          color: AppColor.black, fontSize: 15)))
+              : SizedBox(),
         ],
       ),
     );
