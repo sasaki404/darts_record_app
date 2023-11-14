@@ -1,6 +1,7 @@
 // ignore_for_file: library_private_types_in_public_api
 
 import 'dart:math';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:darts_record_app/page/game/ui/darts_board_painter.dart';
 import 'package:darts_record_app/provider/counter_str.dart';
 import 'package:darts_record_app/util/size_config.dart';
@@ -40,6 +41,7 @@ class _DartsBoardWidgetState extends ConsumerState<DartsBoard> {
   ];
   final diffAngle = (360 / 20) * (pi / 180);
   final double elevenEndAngle = -3;
+  final player = AudioPlayer();
 
   @override
   Widget build(BuildContext context) {
@@ -64,13 +66,19 @@ class _DartsBoardWidgetState extends ConsumerState<DartsBoard> {
         if (77 <= tapDistance && tapDistance <= 95) {
           // トリプル
           score *= 3;
+          player.play(AssetSource("triple.mp3"));
         } else if (153 <= tapDistance && tapDistance <= 172) {
           // ダブル
           score *= 2;
+          player.play(AssetSource("double.mp3"));
         } else if (10 <= tapDistance && tapDistance <= 27) {
           score = 50;
+          player.play(AssetSource("sbull.mp3"));
         } else if (tapDistance < 10) {
           score = 50;
+          player.play(AssetSource("dbull.mp3"));
+        } else {
+          player.play(AssetSource("bull.mp3"));
         }
         final notifier = ref.watch(counterStrNotifierProvider.notifier);
         notifier.updateState(score.toString());
