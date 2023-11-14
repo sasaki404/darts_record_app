@@ -59,22 +59,25 @@ class _DartsBoardWidgetState extends ConsumerState<DartsBoard> {
         final dy = localPosition.dy - centerY / 2;
         final tapDistance = sqrt(dx * dx + dy * dy);
         final tapAngle = atan2(dy, dx);
+        final radius = centerX / 2;
+        print(tapDistance);
 
         // タップされたセクションの得点を計算
         final sectionIndex = ((tapAngle - elevenEndAngle) / diffAngle).floor();
         int score = tokuten[sectionIndex + 1];
-        if (77 <= tapDistance && tapDistance <= 95) {
+        if (radius * 0.4468 <= tapDistance && tapDistance <= radius * 0.5513) {
           // トリプル
           score *= 3;
           player.play(AssetSource("triple.mp3"));
-        } else if (153 <= tapDistance && tapDistance <= 172) {
+        } else if (radius * 0.8878 <= tapDistance && tapDistance <= radius) {
           // ダブル
           score *= 2;
           player.play(AssetSource("double.mp3"));
-        } else if (10 <= tapDistance && tapDistance <= 27) {
+        } else if (radius * 0.058 <= tapDistance &&
+            tapDistance <= radius * 0.15667) {
           score = 50;
           player.play(AssetSource("sbull.mp3"));
-        } else if (tapDistance < 10) {
+        } else if (tapDistance < radius * 0.058) {
           score = 50;
           player.play(AssetSource("dbull.mp3"));
         } else {

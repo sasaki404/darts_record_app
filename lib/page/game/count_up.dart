@@ -15,6 +15,7 @@ import 'package:darts_record_app/provider/round_number.dart';
 import 'package:darts_record_app/provider/score_list.dart';
 import 'package:darts_record_app/provider/total_score.dart';
 import 'package:darts_record_app/util/app_color.dart';
+import 'package:darts_record_app/util/size_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -29,6 +30,7 @@ class CountUp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    SizeConfig().init(context);
     // State
     final totalScore = ref.watch(totalScoreNotifierProvider);
     final roundNumber = ref.watch(roundNumberNotifierProvider);
@@ -247,13 +249,11 @@ class CountUp extends ConsumerWidget {
           //           ))
           //       .toList(),
           // ),
-          const SizedBox(
-            height: 30,
+          SizedBox(
+            height: SizeConfig.blockSizeVertical! * 5,
           ),
           // 得点入力
-          isDartBoardDisplay
-              ? Center(child: const DartsBoard())
-              : CounterKeyboard(),
+          isDartBoardDisplay ? Center(child: DartsBoard()) : CounterKeyboard(),
         ],
       ),
     );
