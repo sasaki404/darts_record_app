@@ -1,6 +1,7 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:darts_record_app/database/count_up_record_table.dart';
-import 'package:darts_record_app/database/user_info_table.dart';
+import 'package:darts_record_app/database/daily_record_table.dart';
+import 'package:darts_record_app/model/daily_record.dart';
 import 'package:darts_record_app/page/game/count_up_result.dart';
 import 'package:darts_record_app/page/game/logic/calculator.dart';
 import 'package:darts_record_app/page/game/ui/counter_keyboard.dart';
@@ -11,6 +12,7 @@ import 'package:darts_record_app/provider/is_darts_board_display.dart';
 import 'package:darts_record_app/provider/is_finished.dart';
 import 'package:darts_record_app/provider/is_selected.dart';
 import 'package:darts_record_app/provider/player_list.dart';
+import 'package:darts_record_app/provider/player_map.dart';
 import 'package:darts_record_app/provider/round_number.dart';
 import 'package:darts_record_app/provider/score_list.dart';
 import 'package:darts_record_app/provider/total_score.dart';
@@ -25,8 +27,10 @@ class CountUp extends ConsumerWidget {
   CountUp({super.key});
   int tempScore = 0; // ダブル、トリプルを考慮するための一時変数
   int whatNum = 0; // ラウンドごとで今何投目か
+  Map<int, Map<String, int>> countMap = {}; // key：ユーザID、val:(key:スコア文字列、val:回数)
   final audioPlayer = AudioPlayer();
   final countUpRecordTable = CountUpRecordTable();
+  final dailyRecordTable = DailyRecordTable();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -39,6 +43,7 @@ class CountUp extends ConsumerWidget {
     final isFinished = ref.watch(isFinishedNotifierProvider);
     final isDartBoardDisplay = ref.watch(isDartsBoardDisplayNotifierProvider);
     final playerList = ref.watch(playerListNotifierProvider);
+    final playerMap = ref.watch(playerMapNotifierProvider);
     final currentPlayerIndex = ref.watch(currentPlayerIndexNotifierProvider);
 
     // Notifier
@@ -68,9 +73,11 @@ class CountUp extends ConsumerWidget {
         return;
       }
 
-      String player = playerList[currentPlayerIndex];
+      int playerId = playerList[currentPlayerIndex];
+      countMap.putIfAbsent(playerId, () => {});
       // スコアの計算
-      int prevScore = (totalScore[player] != null) ? totalScore[player]! : 0;
+      int prevScore =
+          (totalScore[playerId] != null) ? totalScore[playerId]! : 0;
       int score = Calculator.toScore(nextState);
       if (score < 0) {
         // ダブルかトリプルのコマンド
@@ -93,24 +100,37 @@ class CountUp extends ConsumerWidget {
         }
 
         if (tempScore >= 0) {
-          // Redoスタックの先頭にスコアがあるとき
-          scoreListNotifier.pop(player);
-          totalScoreNotifier.updateState(player, scoreListNotifier.sum(player));
+          // Undoスタックの先頭にスコアがあるとき
+          scoreListNotifier.pop(playerId);
+          totalScoreNotifier.updateState(
+              playerId, scoreListNotifier.sum(playerId));
         }
         tempScore = 0;
       } else if (tempScore < 0 && !nextState.startsWith('wait')) {
         // 1個前にダブルかトリプルが選択されてスコアを選択したとき
         final cnt = -tempScore * score;
-        totalScoreNotifier.addScore(player, cnt);
-        scoreListNotifier.push(player, cnt);
+        totalScoreNotifier.addScore(playerId, cnt);
+        scoreListNotifier.push(playerId, cnt);
+        String countKey = (tempScore == -2) ? "DOUBLE-$score" : "TRIPLE-$score";
+        if (countMap[playerId]!.containsKey(countKey)) {
+          countMap[playerId]![countKey] = countMap[playerId]![countKey]! + 1;
+        } else {
+          countMap[playerId]![countKey] = 1;
+        }
         tempScore = 0;
         whatNum += 1;
       } else if (nextState == "Next") {
         whatNum = 3;
       } else {
         // 普通にシングルのスコア
-        totalScoreNotifier.addScore(player, score);
-        scoreListNotifier.push(player, score);
+        totalScoreNotifier.addScore(playerId, score);
+        scoreListNotifier.push(playerId, score);
+        String countKey = nextState.toUpperCase();
+        if (countMap[playerId]!.containsKey(countKey)) {
+          countMap[playerId]![countKey] = countMap[playerId]![countKey]! + 1;
+        } else {
+          countMap[playerId]![countKey] = 1;
+        }
         whatNum += 1;
       }
       // 得点を即時反映させるための処理。もっと良い方法があるはず
@@ -183,13 +203,13 @@ class CountUp extends ConsumerWidget {
             List<Widget> playerScoreDisplayList = [];
             print('playerList:${playerList}');
             int index = 0;
-            for (var e in playerList) {
+            for (var id in playerList) {
               playerScoreDisplayList.add(
                 Column(
                   children: [
                     // プレイヤー名を表示
                     Text(
-                      e,
+                      playerMap[id]!,
                       style: GoogleFonts.bebasNeue(
                           color: (currentPlayerIndex == index)
                               ? AppColor.red
@@ -199,7 +219,9 @@ class CountUp extends ConsumerWidget {
                     ),
                     // 得点を表示
                     Text(
-                      (totalScore[e] != null) ? totalScore[e].toString() : '0',
+                      (totalScore[id] != null)
+                          ? totalScore[id].toString()
+                          : '0',
                       style: GoogleFonts.bebasNeue(
                           color: AppColor.white, fontSize: 60),
                       textAlign: TextAlign.center,
@@ -226,14 +248,25 @@ class CountUp extends ConsumerWidget {
                       context,
                       MaterialPageRoute(builder: (context) => CountUpResult()),
                     );
-                    // TODO:  マルチプレイ対応でuserIdをちゃんと指定する。スコアとかのstateも辞書型に変更してid:stateみたいな感じに
                     // レコード保存
-                    for (var name in playerList) {
-                      int id = await UserInfoTable().selectIdByName(name);
+                    for (int id in playerList) {
                       await countUpRecordTable.insert(
                           userId: id,
-                          score: score[name]!,
-                          scoreList: scoreList[name]!);
+                          score: score[id]!,
+                          scoreList: scoreList[id]!);
+                      DateTime now = DateTime.now();
+                      List<DailyRecord> dailyRecord =
+                          await dailyRecordTable.selectByUserId(id, now);
+                      if (dailyRecord.isEmpty) {
+                        await dailyRecordTable
+                            .insert(userId: id, countMap: countMap[id]!);
+                      } else {
+                        await dailyRecordTable.update(
+                            userId: id,
+                            countMap:
+                                dailyRecord.first.updateCountMap(countMap[id]!),
+                            now: now);
+                      }
                     }
                   },
                   child: Text("Finish",
