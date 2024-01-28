@@ -1,16 +1,17 @@
-# darts_record_app
+# ダーツ記録アプリ
 
-"A new Flutter project."
+自宅やゲームセンター等でダーツをする際に、プレイを記録するためのアプリです。カウントアップ、01、クリケットなどの基本的なゲームを含む5種類のモードに対応する予定です。
 
-## Getting Started
+## 主な特徴
 
-This project is a starting point for a Flutter application.
+### オフライン対戦
 
-A few resources to get you started if this is your first Flutter project:
+端末1つで複数人と対戦をすることができます。
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+![スクリーンショット 2023-12-09 1 27 36](https://github.com/sasaki404/darts_record_app/assets/62131201/93edb098-b858-4f93-890f-85726ce9bc41)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+
+### 直感的なUIで記録
+
+![スクリーンショット 2023-12-09 1 28 25](https://github.com/sasaki404/darts_record_app/assets/62131201/b2e1f093-ff83-4e82-94a2-e3eeeb876390)
+![スクリーンショット 2023-12-09 1 28 43](https://github.com/sasaki404/darts_record_app/assets/62131201/1d16e454-ec2c-446a-8272-120ba138bf8f)
