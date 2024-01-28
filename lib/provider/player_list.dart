@@ -4,7 +4,7 @@ part 'player_list.g.dart';
 @riverpod
 class PlayerListNotifier extends _$PlayerListNotifier {
   @override
-  List<String> build() {
+  List<int> build() {
     return [];
   }
 
@@ -12,16 +12,16 @@ class PlayerListNotifier extends _$PlayerListNotifier {
     //return state.remove();
   }
 
-  void push(String name) {
-    if (!state.contains(name)) {
-      state = [...state, name];
+  void push(int id) {
+    if (!state.contains(id)) {
+      state = [...state, id];
       print(state);
     }
   }
 
-  void remove(String name) {
-    List<String> old = state;
-    old.remove(name);
+  void remove(int id) {
+    List<int> old = state;
+    old.remove(id);
     state = old;
     print(state);
   }
