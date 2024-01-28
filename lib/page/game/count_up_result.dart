@@ -1,6 +1,6 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:darts_record_app/home.dart';
 import 'package:darts_record_app/page/game/count_up.dart';
-import 'package:darts_record_app/page/home_page.dart';
 import 'package:darts_record_app/provider/counter_str.dart';
 import 'package:darts_record_app/provider/is_finished.dart';
 import 'package:darts_record_app/provider/player_list.dart';
@@ -84,7 +84,7 @@ class CountUpResult extends ConsumerWidget {
                     scoreListNotifier.clean();
                     Navigator.pushAndRemoveUntil(
                       context,
-                      MaterialPageRoute(builder: (context) => const HomePage()),
+                      MaterialPageRoute(builder: (context) => const Home()),
                       (route) => false, // すべての履歴をクリア
                     );
                   },
