@@ -1,4 +1,5 @@
 import 'package:darts_record_app/database/count_up_record_table.dart';
+import 'package:darts_record_app/database/daily_record_table.dart';
 import 'package:darts_record_app/database/user_info_table.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -27,8 +28,9 @@ class DatabaseManager {
     final path = await fullPath;
     var database = await openDatabase(
       path,
-      version: 1,
+      version: 3,
       onCreate: create,
+      onUpgrade: upgrade,
       // https://github.com/tekartik/sqflite/blob/master/sqflite/doc/opening_db.md#prevent-database-locked-issue
       singleInstance: true,
     );
@@ -39,5 +41,11 @@ class DatabaseManager {
   Future<void> create(Database db, int ver) async {
     await CountUpRecordTable().createTable(db);
     await UserInfoTable().createTable(db);
+    await DailyRecordTable().createTable(db);
+  }
+
+  // スキマ変更時の処理
+  Future<void> upgrade(Database db, int prevVer, int newVer) async {
+    await DailyRecordTable().createTable(db);
   }
 }
