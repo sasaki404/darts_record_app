@@ -4,11 +4,11 @@ part 'score_list.g.dart';
 @riverpod
 class ScoreListNotifier extends _$ScoreListNotifier {
   @override
-  Map<String, List<int>> build() {
+  Map<int, List<int>> build() {
     return {};
   }
 
-  int pop(String key) {
+  int pop(int key) {
     print(state[key]);
     if (!state.containsKey(key) || state[key]!.isEmpty) {
       return 0;
@@ -16,7 +16,7 @@ class ScoreListNotifier extends _$ScoreListNotifier {
     return state[key]!.removeLast();
   }
 
-  void push(String key, int score) {
+  void push(int key, int score) {
     final old = state;
     old.putIfAbsent(key, () => []);
     old[key]!.add(score);
@@ -24,7 +24,7 @@ class ScoreListNotifier extends _$ScoreListNotifier {
     print(state);
   }
 
-  int sum(String key) {
+  int sum(int key) {
     if (!state.containsKey(key)) {
       return 0;
     }
