@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:darts_record_app/database/count_up_record_table.dart';
 import 'package:darts_record_app/database/daily_record_table.dart';
@@ -6,6 +8,7 @@ import 'package:darts_record_app/page/game/count_up_result.dart';
 import 'package:darts_record_app/page/game/logic/calculator.dart';
 import 'package:darts_record_app/page/game/ui/counter_keyboard.dart';
 import 'package:darts_record_app/page/game/ui/darts_board.dart';
+import 'package:darts_record_app/provider/award_str.dart';
 import 'package:darts_record_app/provider/counter_str.dart';
 import 'package:darts_record_app/provider/current_player_index.dart';
 import 'package:darts_record_app/provider/is_darts_board_display.dart';
@@ -14,6 +17,7 @@ import 'package:darts_record_app/provider/is_selected.dart';
 import 'package:darts_record_app/provider/player_list.dart';
 import 'package:darts_record_app/provider/player_map.dart';
 import 'package:darts_record_app/provider/round_number.dart';
+import 'package:darts_record_app/provider/round_score.dart';
 import 'package:darts_record_app/provider/score_list.dart';
 import 'package:darts_record_app/provider/total_score.dart';
 import 'package:darts_record_app/util/app_color.dart';
@@ -38,13 +42,14 @@ class CountUp extends ConsumerWidget {
     // State
     final totalScore = ref.watch(totalScoreNotifierProvider);
     final roundNumber = ref.watch(roundNumberNotifierProvider);
-    // final roundScore = ref.watch(roundScoreNotifierProvider);
     // final scoreList = ref.watch(scoreListNotifierProvider);
     final isFinished = ref.watch(isFinishedNotifierProvider);
     final isDartBoardDisplay = ref.watch(isDartsBoardDisplayNotifierProvider);
     final playerList = ref.watch(playerListNotifierProvider);
     final playerMap = ref.watch(playerMapNotifierProvider);
     final currentPlayerIndex = ref.watch(currentPlayerIndexNotifierProvider);
+    final roundScore = ref.watch(roundScoreNotifierProvider);
+    final awardStr = ref.watch(awardStrNotifierProvider);
 
     // Notifier
     final totalScoreNotifier = ref.watch(totalScoreNotifierProvider.notifier);
@@ -52,9 +57,10 @@ class CountUp extends ConsumerWidget {
     final roundNumberNotifier = ref.watch(roundNumberNotifierProvider.notifier);
     final scoreListNotifier = ref.watch(scoreListNotifierProvider.notifier);
     final isSelectedNotifier = ref.watch(isSelectedNotifierProvider.notifier);
+    final awardStrNotifier = ref.watch(awardStrNotifierProvider.notifier);
     // print('scoreListNotifierProvider: ${ref.watch(scoreListNotifierProvider)}');
     // TODO:ラウンドでn投目のスコアを表示させたいときに使う
-    // final roundScoreNotifier = ref.watch(roundScoreNotifierProvider.notifier);
+    final roundScoreNotifier = ref.watch(roundScoreNotifierProvider.notifier);
     final isFinishedNotifier = ref.watch(isFinishedNotifierProvider.notifier);
     final isDartsBoardDisplayNotifier =
         ref.watch(isDartsBoardDisplayNotifierProvider.notifier);
@@ -93,7 +99,6 @@ class CountUp extends ConsumerWidget {
           if (roundNumber == 1) {
             whatNum = 0;
           } else {
-            // ラウンドの始まり
             whatNum = 2;
             roundNumberNotifier.toPrevRound();
           }
@@ -104,6 +109,7 @@ class CountUp extends ConsumerWidget {
           scoreListNotifier.pop(playerId);
           totalScoreNotifier.updateState(
               playerId, scoreListNotifier.sum(playerId));
+          roundScoreNotifier.pop(playerId);
         }
         tempScore = 0;
       } else if (tempScore < 0 && !nextState.startsWith('wait')) {
@@ -112,6 +118,7 @@ class CountUp extends ConsumerWidget {
         totalScoreNotifier.addScore(playerId, cnt);
         scoreListNotifier.push(playerId, cnt);
         String countKey = (tempScore == -2) ? "DOUBLE-$score" : "TRIPLE-$score";
+        roundScoreNotifier.push(playerId, countKey);
         if (countMap[playerId]!.containsKey(countKey)) {
           countMap[playerId]![countKey] = countMap[playerId]![countKey]! + 1;
         } else {
@@ -126,6 +133,7 @@ class CountUp extends ConsumerWidget {
         totalScoreNotifier.addScore(playerId, score);
         scoreListNotifier.push(playerId, score);
         String countKey = nextState.toUpperCase();
+        roundScoreNotifier.push(playerId, countKey);
         if (countMap[playerId]!.containsKey(countKey)) {
           countMap[playerId]![countKey] = countMap[playerId]![countKey]! + 1;
         } else {
@@ -141,6 +149,9 @@ class CountUp extends ConsumerWidget {
 
       // 3回投げたとき
       if (whatNum >= 3) {
+        awardStrNotifier
+            .updateState(Calculator.getAward(roundScore[playerId]!, false));
+        isSelectedNotifier.updateState();
         bool isFinishRound = !(currentPlayerIndex + 1 < playerList.length);
         currentPlayerIndexNofiter
             .updateState((isFinishRound) ? 0 : currentPlayerIndex + 1);
@@ -157,15 +168,41 @@ class CountUp extends ConsumerWidget {
           audioPlayer.play(AssetSource("next.mp3"));
         }
         whatNum = 0;
-        // roundScoreNotifier.clean();
+        roundScoreNotifier.clean(playerId);
       }
     });
-    // ref.listen(scoreListNotifierProvider, (prevState, nextState) {
-    //   if (nextState.length <= 3 * (roundNumber - 1)) {
+
+    ref.listen(awardStrNotifierProvider, (prevState, nextState) {
+      if (nextState != "") {
+        int playerId = playerList[currentPlayerIndex];
+        if (countMap[playerId]!.containsKey(nextState)) {
+          countMap[playerId]![nextState] = countMap[playerId]![nextState]! + 1;
+        } else {
+          countMap[playerId]![nextState] = 1;
+        }
+        Timer(
+            const Duration(seconds: 2), () => awardStrNotifier.updateState(""));
+      }
+    });
+
+    // ref.listen(roundScoreNotifierProvider, (prevState, nextState) {
+    //   int playerId = playerList[currentPlayerIndex];
+    //   if (!nextState.containsKey(playerId) || nextState[playerId]!.length < 3) {
     //     return;
     //   }
-    //   for (int i = 3 * (roundNumber - 1); i < nextState.length; i++) {
-    //     roundScoreNotifier.push(nextState[i]);
+    //   // アワードを表示
+    //   awardStrNotifier
+    //       .updateState(Calculator.getAward(nextState[playerId]!, false));
+    //   isSelectedNotifier.updateState();
+    // });
+
+    // ref.listen(scoreListNotifierProvider, (prevState, nextState) {
+    //   if (nextState.values.length < 3 * (roundNumber - 1)) {
+    //     return;
+    //   }
+    //   int playerId = playerList[currentPlayerIndex];
+    //   for (int i = 3 * (roundNumber - 1); i < nextState.values.length; i++) {
+    //     roundScoreNotifier.push(playerId, nextState.values[i]);
     //   }
     // });
 
@@ -198,7 +235,7 @@ class CountUp extends ConsumerWidget {
 
           // プレイヤーごとにスコアを表示
           (() {
-            // 得点を即時反映させるための処理。もっと良い方法があるはず
+            // 得点を即時反映させるための処理
             ref.watch(isSelectedNotifierProvider);
             List<Widget> playerScoreDisplayList = [];
             print('playerList:${playerList}');
@@ -218,14 +255,25 @@ class CountUp extends ConsumerWidget {
                       textAlign: TextAlign.center,
                     ),
                     // 得点を表示
-                    Text(
-                      (totalScore[id] != null)
-                          ? totalScore[id].toString()
-                          : '0',
-                      style: GoogleFonts.bebasNeue(
-                          color: AppColor.white, fontSize: 60),
-                      textAlign: TextAlign.center,
-                    ),
+                    (awardStr.isEmpty)
+                        ? Text(
+                            (totalScore[id] != null)
+                                ? totalScore[id].toString()
+                                : '0',
+                            style: GoogleFonts.bebasNeue(
+                                color: AppColor.white, fontSize: 60),
+                            textAlign: TextAlign.center,
+                          )
+                        : const SizedBox(),
+                    // アワードを表示
+                    (awardStr.isNotEmpty)
+                        ? Text(
+                            awardStr,
+                            style: GoogleFonts.bebasNeue(
+                                color: AppColor.white, fontSize: 60),
+                            textAlign: TextAlign.center,
+                          )
+                        : const SizedBox(),
                   ],
                 ),
               );
@@ -258,8 +306,8 @@ class CountUp extends ConsumerWidget {
                       List<DailyRecord> dailyRecord =
                           await dailyRecordTable.selectByUserId(id, now);
                       if (dailyRecord.isEmpty) {
-                        await dailyRecordTable
-                            .insert(userId: id, countMap: countMap[id]!);
+                        await dailyRecordTable.insert(
+                            userId: id, countMap: countMap[id]!);
                       } else {
                         await dailyRecordTable.update(
                             userId: id,
