@@ -4,9 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() {
   const home = Home();
-  const app = MaterialApp(
+  var app = const MaterialApp(
+    // theme: ThemeData(
+    //   brightness: Brightness.dark,
+    // ),
     home: home,
     debugShowCheckedModeBanner: false,
   );
-  runApp(const ProviderScope(child: app));
+  runApp(ProviderScope(child: app));
 }
