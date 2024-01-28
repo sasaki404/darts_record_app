@@ -1,4 +1,5 @@
 import 'package:darts_record_app/database/count_up_record_table.dart';
+import 'package:darts_record_app/kv/login_user_id.dart';
 import 'package:darts_record_app/model/count_up_record.dart';
 import 'package:darts_record_app/util/app_color.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +22,9 @@ class GraphPageState extends ConsumerState<GraphPage> {
   void initState() {
     super.initState();
     setState(() {
-      countUpRecords = countUpRecordDB.selectByUserId(1);
+      loadLoginUserId().then((id) {
+        countUpRecords = countUpRecordDB.selectByUserId(1);
+      });
     });
   }
 
