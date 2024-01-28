@@ -4,24 +4,25 @@ part 'round_score.g.dart';
 @riverpod
 class RoundScoreNotifier extends _$RoundScoreNotifier {
   @override
-  List<int> build() {
-    return [];
+  Map<int, List<String>> build() {
+    return {};
   }
 
-  int pop() {
-    if (state.isEmpty) {
-      return 0;
+  void pop(int id) {
+    if (!state.containsKey(id) || state[id]!.isEmpty) {
+      return;
     }
-    return state.removeLast();
+    state[id]!.removeLast();
   }
 
-  void push(int score) {
+  void push(int id, String score) {
     final oldState = state;
-    final newState = [...oldState, score];
-    state = newState;
+    oldState.putIfAbsent(id, () => []);
+    oldState[id]!.add(score);
+    state = oldState;
   }
 
-  void clean() {
-    state = [];
+  void clean(int id) {
+    state[id] = [];
   }
 }
