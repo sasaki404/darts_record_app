@@ -4,6 +4,7 @@ import 'package:darts_record_app/page/home_page.dart';
 import 'package:darts_record_app/provider/counter_str.dart';
 import 'package:darts_record_app/provider/is_finished.dart';
 import 'package:darts_record_app/provider/player_list.dart';
+import 'package:darts_record_app/provider/player_map.dart';
 import 'package:darts_record_app/provider/round_number.dart';
 import 'package:darts_record_app/provider/score_list.dart';
 import 'package:darts_record_app/provider/total_score.dart';
@@ -19,20 +20,21 @@ class CountUpResult extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final playerList = ref.watch(playerListNotifierProvider);
+    final playerMap = ref.watch(playerMapNotifierProvider);
     final totalScore = ref.read(totalScoreNotifierProvider);
     List<Widget> resultList = [];
-    for (var player in playerList) {
-      double score = totalScore[player]! / 8;
+    for (var playerId in playerList) {
+      double score = totalScore[playerId]! / 8;
       resultList.add(
         Column(
           children: [
-            Text(player,
+            Text(playerMap[playerId]!,
                 style: GoogleFonts.bebasNeue(
                   color: AppColor.black,
                   fontSize: 30,
                 )),
             Text(
-              totalScore[player].toString(),
+              totalScore[playerId].toString(),
               style: GoogleFonts.bebasNeue(color: AppColor.black, fontSize: 60),
             ),
             Text(
