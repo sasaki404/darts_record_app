@@ -59,8 +59,7 @@ class CalendarPageState extends ConsumerState<CalendarPage> {
                     formatButtonDecoration: BoxDecoration(
                         border: Border.fromBorderSide(
                             BorderSide(color: Colors.white)),
-                        borderRadius:
-                            BorderRadius.all(Radius.circular(12.0))),
+                        borderRadius: BorderRadius.all(Radius.circular(12.0))),
                     leftChevronIcon: Icon(
                       Icons.chevron_left,
                       color: Colors.white,
@@ -141,14 +140,17 @@ class CalendarPageState extends ConsumerState<CalendarPage> {
                     },
                   ),
                 ),
+                // イベント表示
                 Expanded(
                   child: ListView.builder(
                     itemCount: _selectedEvents.length,
                     itemBuilder: (context, index) {
                       final event = _selectedEvents[index];
                       return Card(
+                        color: AppColor.black,
                         child: ListTile(
-                          title: Text(event),
+                          title: Text(event,
+                              style: TextStyle(color: AppColor.white)),
                         ),
                       );
                     },
