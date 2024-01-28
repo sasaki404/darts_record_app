@@ -6,6 +6,7 @@ import 'package:darts_record_app/page/game/count_up.dart';
 import 'package:darts_record_app/page/game/game_start.dart';
 import 'package:darts_record_app/page/game/ui/darts_board.dart';
 import 'package:darts_record_app/provider/player_list.dart';
+import 'package:darts_record_app/provider/player_map.dart';
 import 'package:darts_record_app/provider/user_info.dart';
 import 'package:darts_record_app/util/app_color.dart';
 import 'package:flutter/material.dart';
@@ -36,10 +37,11 @@ class ListPage extends ConsumerWidget {
                     }
                     loadLoginUserId().then((value) {
                       ref.read(userInfoNotifierProvider).whenData((ui) {
+                        int id = UserInfo.createMapfromList(ui)[value]!.id;
+                        String name = UserInfo.createMapfromList(ui)[value]!.name;
                         // ユーザが追加登録されたとき参加プレイヤーリストに追加
-                        ref
-                            .watch(playerListNotifierProvider.notifier)
-                            .push(UserInfo.createMapfromList(ui)[value]!.name);
+                        ref.watch(playerListNotifierProvider.notifier).push(id);
+                        ref.watch(playerMapNotifierProvider.notifier).addUser(id, name);
                       });
                       Navigator.push(
                         context,
@@ -86,7 +88,7 @@ class ListPage extends ConsumerWidget {
                   child: Card(
                     color: AppColor.red,
                     child: Text(
-                      'BIG BULL',
+                      'cricket',
                       style: GoogleFonts.bebasNeue(
                           fontSize: 80, color: AppColor.white),
                       textAlign: TextAlign.center,
