@@ -3,6 +3,7 @@ import 'package:darts_record_app/page/common/user/user_registration_dialog.dart'
 import 'package:darts_record_app/page/game/count_up.dart';
 import 'package:darts_record_app/provider/login_user_id.dart';
 import 'package:darts_record_app/provider/player_list.dart';
+import 'package:darts_record_app/provider/player_map.dart';
 import 'package:darts_record_app/provider/user_info.dart';
 import 'package:darts_record_app/util/app_color.dart';
 import 'package:flutter/material.dart';
@@ -13,9 +14,8 @@ import 'package:google_fonts/google_fonts.dart';
 enum GameType {
   countUpGame,
   zeroOneGame,
-  bigBullGame,
   cricketGame,
-  centerCountUpGame,
+  rangeCountUpGame,
 }
 
 // スタート画面
@@ -27,11 +27,14 @@ class GameStart extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final userInfo = ref.watch(userInfoNotifierProvider);
     final loginUserId = ref.watch(loginUserIdNotifierProvider);
-    final playerList = ref.watch(playerListNotifierProvider);
+    final playerMap = ref.watch(playerMapNotifierProvider);
     ref.listen(userInfoNotifierProvider, (prev, next) {
       next.whenData((value) {
         // ユーザが追加登録されたとき参加プレイヤーリストに追加
-        ref.watch(playerListNotifierProvider.notifier).push(value.last.name);
+        ref.watch(playerListNotifierProvider.notifier).push(value.last.id);
+        ref
+            .watch(playerMapNotifierProvider.notifier)
+            .addUser(value.last.id, value.last.name);
       });
     });
     return Scaffold(
@@ -71,10 +74,12 @@ class GameStart extends ConsumerWidget {
                     )
                   : (() {
                       List<Widget> userCardList = [];
-                      for (String name in playerList) {
+                      for (var e in playerMap.entries) {
                         // ログインユーザを参加者リストに追加する
                         // ref.watch(playerListNotifierProvider.notifier).push(
                         //     UserInfo.createMapfromList(data)[value]!.name);
+                        int userId = e.key;
+                        String name = e.value;
                         userCardList.add(
                           TextButton(
                             onPressed: () {
@@ -116,7 +121,11 @@ class GameStart extends ConsumerWidget {
                                           ref
                                               .watch(playerListNotifierProvider
                                                   .notifier)
-                                              .remove(name);
+                                              .remove(userId);
+                                          ref
+                                              .watch(playerMapNotifierProvider
+                                                  .notifier)
+                                              .remove(userId);
                                           // popだけだと画面が更新されない。とりあえず動作はOKだが要検討
                                           Navigator.pop(context);
                                           Navigator.of(context).pushReplacement(
@@ -191,7 +200,11 @@ class GameStart extends ConsumerWidget {
                                           ref
                                               .watch(playerListNotifierProvider
                                                   .notifier)
-                                              .push(info.name);
+                                              .push(info.id);
+                                          ref
+                                              .watch(playerMapNotifierProvider
+                                                  .notifier)
+                                              .addUser(info.id, info.name);
                                           Navigator.pop(context);
                                         },
                                         child: Column(
