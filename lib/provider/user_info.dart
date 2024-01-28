@@ -12,12 +12,14 @@ class UserInfoNotifier extends _$UserInfoNotifier {
 
   Future<int> insert(String name) async {
     int id = await UserInfoTable().insert(name);
+    // TODO: 全件取得する必要はない
     state = AsyncData(await UserInfoTable().selectAll());
     return id;
   }
 
   Future<void> updateState(UserInfo info) async {
-    UserInfoTable().update(info);
+    await UserInfoTable().update(info);
+    // TODO: 全件取得する必要はない
     state = AsyncData(await UserInfoTable().selectAll());
   }
 
