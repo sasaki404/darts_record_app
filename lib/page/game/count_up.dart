@@ -149,8 +149,22 @@ class CountUp extends ConsumerWidget {
 
       // 3回投げたとき
       if (whatNum >= 3) {
-        awardStrNotifier
-            .updateState(Calculator.getAward(roundScore[playerId]!, false));
+        String award = Calculator.getAward(roundScore[playerId]!, false);
+        awardStrNotifier.updateState(playerId, award);
+        if (award != "") {
+          if (countMap[playerId]!.containsKey(award)) {
+            countMap[playerId]![award] = countMap[playerId]![award]! + 1;
+          } else {
+            countMap[playerId]![award] = 1;
+          }
+          Timer(
+            const Duration(seconds: 2),
+            () {
+              awardStrNotifier.updateState(playerId, "");
+              isSelectedNotifier.updateState();
+            },
+          );
+        }
         isSelectedNotifier.updateState();
         bool isFinishRound = !(currentPlayerIndex + 1 < playerList.length);
         currentPlayerIndexNofiter
@@ -171,20 +185,6 @@ class CountUp extends ConsumerWidget {
         roundScoreNotifier.clean(playerId);
       }
     });
-
-    ref.listen(awardStrNotifierProvider, (prevState, nextState) {
-      if (nextState != "") {
-        int playerId = playerList[currentPlayerIndex];
-        if (countMap[playerId]!.containsKey(nextState)) {
-          countMap[playerId]![nextState] = countMap[playerId]![nextState]! + 1;
-        } else {
-          countMap[playerId]![nextState] = 1;
-        }
-        Timer(
-            const Duration(seconds: 2), () => awardStrNotifier.updateState(""));
-      }
-    });
-
     // ref.listen(roundScoreNotifierProvider, (prevState, nextState) {
     //   int playerId = playerList[currentPlayerIndex];
     //   if (!nextState.containsKey(playerId) || nextState[playerId]!.length < 3) {
@@ -255,7 +255,7 @@ class CountUp extends ConsumerWidget {
                       textAlign: TextAlign.center,
                     ),
                     // 得点を表示
-                    (awardStr.isEmpty)
+                    (!awardStr.containsKey(id) || awardStr[id]!.isEmpty)
                         ? Text(
                             (totalScore[id] != null)
                                 ? totalScore[id].toString()
@@ -266,9 +266,9 @@ class CountUp extends ConsumerWidget {
                           )
                         : const SizedBox(),
                     // アワードを表示
-                    (awardStr.isNotEmpty)
+                    (awardStr.containsKey(id) && awardStr[id]!.isNotEmpty)
                         ? Text(
-                            awardStr,
+                            awardStr[id]!,
                             style: GoogleFonts.bebasNeue(
                                 color: AppColor.white, fontSize: 60),
                             textAlign: TextAlign.center,
