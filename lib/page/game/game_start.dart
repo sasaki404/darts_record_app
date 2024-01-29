@@ -1,6 +1,7 @@
 import 'package:darts_record_app/model/user_info.dart';
 import 'package:darts_record_app/page/common/user/user_registration_dialog.dart';
 import 'package:darts_record_app/page/game/count_up.dart';
+import 'package:darts_record_app/page/game/zero_one_start.dart';
 import 'package:darts_record_app/provider/login_user_id.dart';
 import 'package:darts_record_app/provider/player_list.dart';
 import 'package:darts_record_app/provider/player_map.dart';
@@ -206,6 +207,12 @@ class GameStart extends ConsumerWidget {
                                                   .notifier)
                                               .addUser(info.id, info.name);
                                           Navigator.pop(context);
+                                          Navigator.of(context).pushReplacement(
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  GameStart(gameType: gameType),
+                                            ),
+                                          );
                                         },
                                         child: Column(
                                           mainAxisAlignment:
@@ -278,6 +285,8 @@ class GameStart extends ConsumerWidget {
                       switch (gameType) {
                         case GameType.countUpGame:
                           return CountUp();
+                        case GameType.zeroOneGame:
+                          return ZeroOneStart();
                         case _:
                           return CountUp();
                       }
